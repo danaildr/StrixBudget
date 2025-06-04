@@ -41,8 +41,8 @@
 
 1. Клониране на хранилището:
 ```bash
-git clone [repository-url]
-cd [project-directory]
+git clone https://github.com/danaildr/StrixBudget.git
+cd StrixBudget
 ```
 
 2. Инсталиране на PHP зависимости:
