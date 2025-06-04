@@ -1,0 +1,16 @@
+:root {
+    --chart-color-1: #10B981;  /* green-500 */
+    --chart-color-2: #3B82F6;  /* blue-500 */
+    --chart-color-3: #F59E0B;  /* amber-500 */
+    --chart-color-4: #EF4444;  /* red-500 */
+    --chart-color-5: #8B5CF6;  /* purple-500 */
+    --chart-color-6: #EC4899;  /* pink-500 */
+    --chart-color-7: #6366F1;  /* indigo-500 */
+    --chart-color-8: #14B8A6;  /* teal-500 */
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+} 
