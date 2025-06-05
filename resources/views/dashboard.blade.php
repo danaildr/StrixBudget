@@ -6,7 +6,7 @@
     </x-slot>
 
     @push('styles')
-    <link rel="stylesheet" href="{{ Vite::asset('resources/css/chart.css') }}">
+    @vite(['resources/css/chart.css'])
     @endpush
 
     @push('scripts')

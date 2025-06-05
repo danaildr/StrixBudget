@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -32,9 +33,9 @@ class AuthenticatedSessionController extends Controller
 
         // Set locale after successful authentication
         if (Auth::check()) {
-            $locale = Auth::user()->locale;
+            $locale = Auth::user()->locale ?? config('app.locale');
+            Session::put('locale', $locale);
             App::setLocale($locale);
-            session(['locale' => $locale]);
         }
 
         return redirect()->intended(route('dashboard'));
