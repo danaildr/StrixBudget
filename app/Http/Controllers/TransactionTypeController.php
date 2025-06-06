@@ -64,6 +64,21 @@ class TransactionTypeController extends Controller
             ->with('success', 'Transaction type created successfully.');
     }
 
+    public function show(TransactionType $transactionType)
+    {
+        $this->authorize('view', $transactionType);
+
+        // Зареждаме статистики за типа транзакция
+        $transactionType->loadCount('transactions');
+
+        // Изчисляваме общата сума
+        $totalAmount = $transactionType->transactions()
+            ->sum('amount');
+        $transactionType->total_amount = $totalAmount;
+
+        return view('transaction-types.show', compact('transactionType'));
+    }
+
     public function edit(TransactionType $transactionType)
     {
         $this->authorize('update', $transactionType);
