@@ -61,7 +61,7 @@
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $type->name }}</td>
                                         <td class="px-6 py-4 text-sm text-gray-500">
-                                            {{ Str::limit($type->description, 100) }}
+                                            {{ str($type->description)->limit(100) }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                                             <div class="flex space-x-3">

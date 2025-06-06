@@ -168,7 +168,7 @@
                                                 @endif
                                             </td>
                                             <td class="px-6 py-4 text-sm text-gray-500">
-                                                {{ Str::limit($transfer->description, 50) }}
+                                                {{ str($transfer->description)->limit(50) }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm">
                                                 <a href="{{ route('transfers.show', $transfer) }}" class="text-indigo-600 hover:text-indigo-900">{{ __('View Details') }}</a>

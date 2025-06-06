@@ -140,7 +140,7 @@
                                                         {{ number_format($transaction->amount, 2) }} {{ $transaction->currency }}
                                                     </td>
                                                     <td class="px-6 py-4 text-sm text-gray-900">
-                                                        {{ Str::limit($transaction->description, 50) }}
+                                                        {{ str($transaction->description)->limit(50) }}
                                                     </td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
                                                         <a href="{{ route('transactions.show', $transaction) }}" class="text-blue-600 hover:text-blue-900">{{ __('View') }}</a>

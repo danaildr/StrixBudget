@@ -46,32 +46,33 @@ class ImportController extends Controller
         // Задаваме заглавията според типа
         switch ($type) {
             case 'transaction-types':
-                $headers = ['name', 'description'];
+                $headers = ['Name', 'Description'];
                 break;
             case 'counterparties':
-                $headers = ['name', 'email', 'phone', 'description'];
+                $headers = ['Name', 'Email', 'Phone', 'Description'];
                 break;
             case 'bank-accounts':
-                $headers = ['name', 'currency', 'initial_balance', 'is_active', 'is_default'];
+                $headers = ['Name', 'Currency (BGN/EUR/USD)', 'Initial Balance', 'Is Active (true/false)', 'Is Default (true/false)'];
                 break;
             case 'transactions':
                 $headers = [
-                    'bank_account_name',
-                    'counterparty_name',
-                    'transaction_type_name',
-                    'type',
-                    'amount',
-                    'description',
-                    'executed_at'
+                    'Bank Account',
+                    'Counterparty',
+                    'Transaction Type',
+                    'Type (income/expense)',
+                    'Amount',
+                    'Description',
+                    'Date (YYYY-MM-DD)'
                 ];
                 break;
             case 'transfers':
                 $headers = [
-                    'from_account_name',
-                    'to_account_name',
-                    'amount',
-                    'description',
-                    'executed_at'
+                    'From Account',
+                    'To Account',
+                    'Amount',
+                    'Description',
+                    'Date (YYYY-MM-DD)',
+                    'Exchange Rate (optional)'
                 ];
                 break;
             default:
@@ -80,6 +81,45 @@ class ImportController extends Controller
 
         // Записваме заглавията
         $sheet->fromArray([$headers], null, 'A1');
+
+        // Добавяме примерни данни за по-добро разбиране
+        switch ($type) {
+            case 'transactions':
+                $exampleData = [
+                    'Основна сметка',
+                    'Електроразпределение',
+                    'Комунални услуги',
+                    'expense',
+                    '45.50',
+                    'Ток за декември',
+                    '2025-01-15'
+                ];
+                $sheet->fromArray([$exampleData], null, 'A2');
+                break;
+            case 'transfers':
+                $exampleData = [
+                    'Основна сметка',
+                    'Спестовна сметка',
+                    '500.00',
+                    'Месечно спестяване',
+                    '2025-01-15',
+                    '' // Exchange rate е опционален
+                ];
+                $sheet->fromArray([$exampleData], null, 'A2');
+                break;
+            case 'transaction-types':
+                $exampleData = ['Комунални услуги', 'Разходи за ток, вода, газ'];
+                $sheet->fromArray([$exampleData], null, 'A2');
+                break;
+            case 'counterparties':
+                $exampleData = ['Електроразпределение', 'office@electricity.bg', '+359888123456', 'Доставчик на електричество'];
+                $sheet->fromArray([$exampleData], null, 'A2');
+                break;
+            case 'bank-accounts':
+                $exampleData = ['Основна сметка', 'BGN', '1000.00', 'true', 'true'];
+                $sheet->fromArray([$exampleData], null, 'A2');
+                break;
+        }
 
         // Създаваме writer според формата
         switch ($format) {
@@ -253,6 +293,15 @@ class ImportController extends Controller
 
     /**
      * Импортира транзакции
+     *
+     * Очакван формат на CSV файла:
+     * Колона 0: Име на банкова сметка
+     * Колона 1: Име на контрагент
+     * Колона 2: Име на тип транзакция
+     * Колона 3: Тип (income/expense)
+     * Колона 4: Сума
+     * Колона 5: Описание (опционално)
+     * Колона 6: Дата на изпълнение
      */
     public function importTransactions(Request $request)
     {
@@ -291,14 +340,27 @@ class ImportController extends Controller
                     ->where('name', $row[2])
                     ->firstOrFail();
 
+                // Обработваме датата
+                $executedAt = $row[6];
+                if (!empty($executedAt)) {
+                    try {
+                        $executedAt = \Carbon\Carbon::parse($executedAt);
+                    } catch (\Exception $e) {
+                        $executedAt = now(); // Fallback към текущата дата
+                    }
+                } else {
+                    $executedAt = now();
+                }
+
                 $transaction = $user->transactions()->create([
                     'bank_account_id' => $bankAccount->id,
                     'counterparty_id' => $counterparty->id,
                     'transaction_type_id' => $transactionType->id,
                     'type' => $row[3],
                     'amount' => $row[4],
+                    'currency' => $bankAccount->currency, // Използваме валутата на сметката
                     'description' => $row[5] ?? null,
-                    'executed_at' => $row[6],
+                    'executed_at' => $executedAt,
                 ]);
 
                 // Актуализираме баланса на сметката
@@ -315,6 +377,14 @@ class ImportController extends Controller
 
     /**
      * Импортира трансфери
+     *
+     * Очакван формат на CSV файла:
+     * Колона 0: Име на изходяща банкова сметка
+     * Колона 1: Име на входяща банкова сметка
+     * Колона 2: Сума (в валутата на изходящата сметка)
+     * Колона 3: Описание (опционално)
+     * Колона 4: Дата на изпълнение
+     * Колона 5: Exchange rate (опционално, само при различни валути)
      */
     public function importTransfers(Request $request)
     {
@@ -348,17 +418,49 @@ class ImportController extends Controller
                     ->where('name', $row[1])
                     ->firstOrFail();
 
+                // Изчисляваме exchange rate и amount_to
+                $amountFrom = $row[2];
+                $currencyFrom = $fromAccount->currency;
+                $currencyTo = $toAccount->currency;
+                $description = $row[3] ?? null;
+
+                // Обработваме датата
+                $executedAt = $row[4];
+                if (!empty($executedAt)) {
+                    try {
+                        $executedAt = \Carbon\Carbon::parse($executedAt);
+                    } catch (\Exception $e) {
+                        $executedAt = now(); // Fallback към текущата дата
+                    }
+                } else {
+                    $executedAt = now();
+                }
+
+                // Ако валутите са еднакви, exchange rate е 1
+                $exchangeRate = 1.0;
+                $amountTo = $amountFrom;
+
+                // Ако има различни валути и е предоставен exchange rate в колона 5
+                if ($currencyFrom !== $currencyTo && isset($row[5]) && !empty($row[5])) {
+                    $exchangeRate = (float) $row[5];
+                    $amountTo = $amountFrom * $exchangeRate;
+                }
+
                 $transfer = $user->transfers()->create([
                     'from_account_id' => $fromAccount->id,
                     'to_account_id' => $toAccount->id,
-                    'amount' => $row[2],
-                    'description' => $row[3] ?? null,
-                    'executed_at' => $row[4],
+                    'amount_from' => $amountFrom,
+                    'currency_from' => $currencyFrom,
+                    'amount_to' => $amountTo,
+                    'currency_to' => $currencyTo,
+                    'exchange_rate' => $exchangeRate,
+                    'description' => $description,
+                    'executed_at' => $executedAt,
                 ]);
 
                 // Актуализираме балансите на сметките
-                $fromAccount->withdraw($transfer->amount);
-                $toAccount->deposit($transfer->amount);
+                $fromAccount->withdraw($transfer->amount_from);
+                $toAccount->deposit($transfer->amount_to);
             }
 
             DB::commit();

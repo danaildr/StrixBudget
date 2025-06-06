@@ -109,5 +109,7 @@
     "Get detailed insights into your finances with monthly and yearly statistics and trends.": "Получете детайлен поглед върху финансите си с месечни и годишни статистики и тенденции.",
     "Go to Dashboard": "Към таблото",
     "Log in": "Вход",
-    "Create Account": "Създай профил"
+    "Create Account": "Създай профил",
+    "Import transactions with columns: Bank Account, Counterparty, Transaction Type, Type (income/expense), Amount, Description, Date. Templates include example data.": "Импортирайте транзакции с колони: Банкова сметка, Контрагент, Тип транзакция, Тип (приход/разход), Сума, Описание, Дата. Шаблоните включват примерни данни.",
+    "Import transfers with columns: From Account, To Account, Amount, Description, Date, Exchange Rate (optional for different currencies). Templates include example data.": "Импортирайте трансфери с колони: От сметка, Към сметка, Сума, Описание, Дата, Обменен курс (опционален за различни валути). Шаблоните включват примерни данни."
 } 

@@ -99,6 +99,9 @@
                         <!-- Транзакции -->
                         <div class="border rounded-lg p-4">
                             <h4 class="font-medium text-gray-800 mb-2">{{ __('Transactions') }}</h4>
+                            <p class="text-sm text-gray-600 mb-3">
+                                {{ __('Import transactions with columns: Bank Account, Counterparty, Transaction Type, Type (income/expense), Amount, Description, Date. Templates include example data.') }}
+                            </p>
                             <div class="flex items-center space-x-4">
                                 <div class="flex-grow">
                                     <form action="{{ route('import.transactions') }}" method="POST" enctype="multipart/form-data" class="flex items-center space-x-4">
@@ -118,6 +121,9 @@
                         <!-- Трансфери -->
                         <div class="border rounded-lg p-4">
                             <h4 class="font-medium text-gray-800 mb-2">{{ __('Transfers') }}</h4>
+                            <p class="text-sm text-gray-600 mb-3">
+                                {{ __('Import transfers with columns: From Account, To Account, Amount, Description, Date, Exchange Rate (optional for different currencies). Templates include example data.') }}
+                            </p>
                             <div class="flex items-center space-x-4">
                                 <div class="flex-grow">
                                     <form action="{{ route('import.transfers') }}" method="POST" enctype="multipart/form-data" class="flex items-center space-x-4">
