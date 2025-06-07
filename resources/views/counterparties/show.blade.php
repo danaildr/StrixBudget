@@ -76,25 +76,74 @@
                                 </div>
                             </div>
 
-                            <!-- Статистика -->
-                            <div>
-                                <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('Transaction Statistics') }}</h3>
-                                <div class="bg-gray-50 rounded-lg p-4 space-y-2">
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">{{ __('Total Transactions') }}:</span>
-                                        <span class="text-gray-900">{{ $counterparty->transactions_count }}</span>
+                            <!-- Статистики -->
+                            <div class="space-y-4">
+                                <!-- Общи статистики -->
+                                <div>
+                                    <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('Total Statistics') }}</h3>
+                                    <div class="bg-gray-50 rounded-lg p-4 space-y-2">
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">{{ __('Total Transactions') }}:</span>
+                                            <span class="text-gray-900">{{ $totalStats['count'] }}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">{{ __('Total Income') }}:</span>
+                                            <span class="text-green-600">
+                                                {{ number_format($totalStats['income'], 2) }} лв.
+                                            </span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">{{ __('Total Expenses') }}:</span>
+                                            <span class="text-red-600">
+                                                {{ number_format($totalStats['expenses'], 2) }} лв.
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">{{ __('Total Income') }}:</span>
-                                        <span class="text-green-600">
-                                            {{ number_format($counterparty->total_income, 2) }}
-                                        </span>
+                                </div>
+
+                                <!-- Статистики за последната година -->
+                                <div>
+                                    <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('Last Year Statistics') }}</h3>
+                                    <div class="bg-blue-50 rounded-lg p-4 space-y-2">
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">{{ __('Transactions') }}:</span>
+                                            <span class="text-gray-900">{{ $yearStats['count'] }}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">{{ __('Income') }}:</span>
+                                            <span class="text-green-600">
+                                                {{ number_format($yearStats['income'], 2) }} лв.
+                                            </span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">{{ __('Expenses') }}:</span>
+                                            <span class="text-red-600">
+                                                {{ number_format($yearStats['expenses'], 2) }} лв.
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">{{ __('Total Expenses') }}:</span>
-                                        <span class="text-red-600">
-                                            {{ number_format($counterparty->total_expenses, 2) }}
-                                        </span>
+                                </div>
+
+                                <!-- Статистики за последния месец -->
+                                <div>
+                                    <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('Last Month Statistics') }}</h3>
+                                    <div class="bg-green-50 rounded-lg p-4 space-y-2">
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">{{ __('Transactions') }}:</span>
+                                            <span class="text-gray-900">{{ $monthStats['count'] }}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">{{ __('Income') }}:</span>
+                                            <span class="text-green-600">
+                                                {{ number_format($monthStats['income'], 2) }} лв.
+                                            </span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">{{ __('Expenses') }}:</span>
+                                            <span class="text-red-600">
+                                                {{ number_format($monthStats['expenses'], 2) }} лв.
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

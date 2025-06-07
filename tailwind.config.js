@@ -43,7 +43,18 @@ export default {
         'focus:bg-orange-700',
         'active:bg-orange-900',
         'ring-orange-500',
-        'focus:ring-orange-500'
+        'focus:ring-orange-500',
+        'bg-blue-600',
+        'bg-blue-700',
+        'hover:bg-blue-700',
+        'focus:bg-blue-700',
+        'active:bg-blue-900',
+        'ring-blue-500',
+        'focus:ring-blue-500',
+        'text-blue-600',
+        'text-blue-800',
+        'bg-blue-50',
+        'bg-blue-100'
     ],
 
     theme: {

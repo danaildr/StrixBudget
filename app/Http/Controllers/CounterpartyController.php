@@ -84,13 +84,61 @@ class CounterpartyController extends Controller
     {
         $this->authorize('view', $counterparty);
 
+        // Изчисляваме статистики за различни периоди
+        $now = now();
+        $lastMonth = $now->copy()->subMonth();
+        $lastYear = $now->copy()->subYear();
+
+        // Общи статистики
+        $totalStats = [
+            'count' => $counterparty->transactions()->count(),
+            'income' => $counterparty->transactions()->where('type', 'income')->sum('amount'),
+            'expenses' => $counterparty->transactions()->where('type', 'expense')->sum('amount')
+        ];
+
+        // Статистики за последния месец
+        $monthStats = [
+            'count' => $counterparty->transactions()
+                ->where('executed_at', '>=', $lastMonth)
+                ->count(),
+            'income' => $counterparty->transactions()
+                ->where('type', 'income')
+                ->where('executed_at', '>=', $lastMonth)
+                ->sum('amount'),
+            'expenses' => $counterparty->transactions()
+                ->where('type', 'expense')
+                ->where('executed_at', '>=', $lastMonth)
+                ->sum('amount')
+        ];
+
+        // Статистики за последната година
+        $yearStats = [
+            'count' => $counterparty->transactions()
+                ->where('executed_at', '>=', $lastYear)
+                ->count(),
+            'income' => $counterparty->transactions()
+                ->where('type', 'income')
+                ->where('executed_at', '>=', $lastYear)
+                ->sum('amount'),
+            'expenses' => $counterparty->transactions()
+                ->where('type', 'expense')
+                ->where('executed_at', '>=', $lastYear)
+                ->sum('amount')
+        ];
+
         // Вземаме всички транзакции с пагинация
         $transactions = $counterparty->transactions()
             ->with(['bankAccount', 'transactionType'])
             ->latest('executed_at')
-            ->paginate(10);
+            ->paginate(20);
 
-        return view('counterparties.show', compact('counterparty', 'transactions'));
+        return view('counterparties.show', compact(
+            'counterparty',
+            'transactions',
+            'totalStats',
+            'monthStats',
+            'yearStats'
+        ));
     }
 
     /**

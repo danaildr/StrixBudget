@@ -64,23 +64,129 @@
                                 </div>
                             </div>
 
-                            <!-- Статистика -->
-                            <div>
-                                <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('Usage Statistics') }}</h3>
-                                <div class="bg-gray-50 rounded-lg p-4 space-y-2">
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">{{ __('Total Transactions') }}:</span>
-                                        <span class="text-gray-900">{{ $transactionType->transactions_count }}</span>
+                            <!-- Статистики -->
+                            <div class="space-y-4">
+                                <!-- Общи статистики -->
+                                <div>
+                                    <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('Total Statistics') }}</h3>
+                                    <div class="bg-gray-50 rounded-lg p-4 space-y-2">
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">{{ __('Total Transactions') }}:</span>
+                                            <span class="text-gray-900">{{ $totalStats['count'] }}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">{{ __('Total Amount') }}:</span>
+                                            <span class="text-gray-900">
+                                                {{ number_format($totalStats['amount'], 2) }} лв.
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">{{ __('Total Amount') }}:</span>
-                                        <span class="{{ $transactionType->category === 'income' ? 'text-green-600' : 'text-red-600' }}">
-                                            {{ number_format($transactionType->total_amount, 2) }}
-                                        </span>
+                                </div>
+
+                                <!-- Статистики за последната година -->
+                                <div>
+                                    <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('Last Year Statistics') }}</h3>
+                                    <div class="bg-blue-50 rounded-lg p-4 space-y-2">
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">{{ __('Transactions') }}:</span>
+                                            <span class="text-gray-900">{{ $yearStats['count'] }}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">{{ __('Amount') }}:</span>
+                                            <span class="text-gray-900">
+                                                {{ number_format($yearStats['amount'], 2) }} лв.
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Статистики за последния месец -->
+                                <div>
+                                    <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('Last Month Statistics') }}</h3>
+                                    <div class="bg-green-50 rounded-lg p-4 space-y-2">
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">{{ __('Transactions') }}:</span>
+                                            <span class="text-gray-900">{{ $monthStats['count'] }}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">{{ __('Amount') }}:</span>
+                                            <span class="text-gray-900">
+                                                {{ number_format($monthStats['amount'], 2) }} лв.
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Списък с транзакции -->
+                    <div class="mt-8">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('Recent Transactions') }}</h3>
+
+                        @if($transactions->count() > 0)
+                            <div class="bg-white shadow overflow-hidden sm:rounded-md">
+                                <ul class="divide-y divide-gray-200">
+                                    @foreach($transactions as $transaction)
+                                        <li>
+                                            <div class="px-4 py-4 flex items-center justify-between">
+                                                <div class="flex items-center">
+                                                    <div class="flex-shrink-0">
+                                                        <div class="h-10 w-10 rounded-full {{ $transaction->type === 'income' ? 'bg-green-100' : 'bg-red-100' }} flex items-center justify-center">
+                                                            @if($transaction->type === 'income')
+                                                                <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                                                </svg>
+                                                            @else
+                                                                <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+                                                                </svg>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                    <div class="ml-4">
+                                                        <div class="text-sm font-medium text-gray-900">
+                                                            {{ $transaction->counterparty->name ?? __('No counterparty') }}
+                                                        </div>
+                                                        <div class="text-sm text-gray-500">
+                                                            {{ $transaction->bankAccount->name }} • {{ $transaction->executed_at->format('d.m.Y H:i') }}
+                                                        </div>
+                                                        @if($transaction->description)
+                                                            <div class="text-sm text-gray-500 mt-1">
+                                                                {{ str($transaction->description)->limit(50) }}
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                                <div class="flex items-center">
+                                                    <div class="text-sm font-medium {{ $transaction->type === 'income' ? 'text-green-600' : 'text-red-600' }}">
+                                                        {{ $transaction->type === 'income' ? '+' : '-' }}{{ number_format($transaction->amount, 2) }} лв.
+                                                    </div>
+                                                    <div class="ml-4">
+                                                        <a href="{{ route('transactions.show', $transaction) }}" class="text-indigo-600 hover:text-indigo-900 text-sm">
+                                                            {{ __('View') }}
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+
+                            <!-- Пагинация -->
+                            <div class="mt-4">
+                                {{ $transactions->links() }}
+                            </div>
+                        @else
+                            <div class="text-center py-8">
+                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg>
+                                <h3 class="mt-2 text-sm font-medium text-gray-900">{{ __('No transactions') }}</h3>
+                                <p class="mt-1 text-sm text-gray-500">{{ __('No transactions found for this category.') }}</p>
+                            </div>
+                        @endif
                     </div>
 
                     <!-- Бутон за изтриване -->
@@ -97,4 +203,4 @@
             </div>
         </div>
     </div>
-</x-app-layout> 
+</x-app-layout>

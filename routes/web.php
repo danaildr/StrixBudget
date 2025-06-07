@@ -9,6 +9,7 @@ use App\Http\Controllers\TransactionTypeController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\ImportController;
+use App\Http\Controllers\HelpController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -30,6 +31,9 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('transfers', TransferController::class);
     Route::resource('transactions', TransactionController::class);
     Route::resource('transaction-types', TransactionTypeController::class);
+
+    // Help page
+    Route::get('/help', [HelpController::class, 'index'])->name('help.index');
 
     // Експортиране на транзакции
     Route::get('/transactions/export/{format}', [ExportController::class, 'exportTransactions'])

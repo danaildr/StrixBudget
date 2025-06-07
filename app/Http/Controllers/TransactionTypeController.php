@@ -71,12 +71,50 @@ class TransactionTypeController extends Controller
         // Зареждаме статистики за типа транзакция
         $transactionType->loadCount('transactions');
 
-        // Изчисляваме общата сума
-        $totalAmount = $transactionType->transactions()
-            ->sum('amount');
-        $transactionType->total_amount = $totalAmount;
+        // Изчисляваме статистики за различни периоди
+        $now = now();
+        $lastMonth = $now->copy()->subMonth();
+        $lastYear = $now->copy()->subYear();
 
-        return view('transaction-types.show', compact('transactionType'));
+        // Общи статистики
+        $totalStats = [
+            'count' => $transactionType->transactions()->count(),
+            'amount' => $transactionType->transactions()->sum('amount')
+        ];
+
+        // Статистики за последния месец
+        $monthStats = [
+            'count' => $transactionType->transactions()
+                ->where('executed_at', '>=', $lastMonth)
+                ->count(),
+            'amount' => $transactionType->transactions()
+                ->where('executed_at', '>=', $lastMonth)
+                ->sum('amount')
+        ];
+
+        // Статистики за последната година
+        $yearStats = [
+            'count' => $transactionType->transactions()
+                ->where('executed_at', '>=', $lastYear)
+                ->count(),
+            'amount' => $transactionType->transactions()
+                ->where('executed_at', '>=', $lastYear)
+                ->sum('amount')
+        ];
+
+        // Транзакции с пагинация
+        $transactions = $transactionType->transactions()
+            ->with(['bankAccount', 'counterparty'])
+            ->latest('executed_at')
+            ->paginate(20);
+
+        return view('transaction-types.show', compact(
+            'transactionType',
+            'totalStats',
+            'monthStats',
+            'yearStats',
+            'transactions'
+        ));
     }
 
     public function edit(TransactionType $transactionType)
