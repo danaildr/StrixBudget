@@ -29,6 +29,7 @@ class User extends Authenticatable
         'email',
         'password',
         'locale',
+        'role',
     ];
 
     /**
@@ -94,5 +95,29 @@ class User extends Authenticatable
     public function transactionTypes(): HasMany
     {
         return $this->hasMany(TransactionType::class);
+    }
+
+    /**
+     * Check if user is admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Check if user has limited access
+     */
+    public function isLimited(): bool
+    {
+        return $this->role === 'limited';
+    }
+
+    /**
+     * Get the registration keys created by this user
+     */
+    public function createdRegistrationKeys(): HasMany
+    {
+        return $this->hasMany(RegistrationKey::class, 'created_by');
     }
 }

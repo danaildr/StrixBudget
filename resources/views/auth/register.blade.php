@@ -39,6 +39,27 @@
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
+        <!-- Registration Key (only show if not first user) -->
+        @php
+            $isFirstUser = \App\Models\User::count() === 0;
+        @endphp
+
+        @if(!$isFirstUser)
+            <div class="mt-4">
+                <x-input-label for="registration_key" :value="__('Registration Key')" />
+                <x-text-input id="registration_key" class="block mt-1 w-full" type="text" name="registration_key" :value="old('registration_key')" required />
+                <x-input-error :messages="$errors->get('registration_key')" class="mt-2" />
+                <p class="mt-1 text-sm text-gray-600">{{ __('You need a valid registration key to create an account. Contact an administrator to get one.') }}</p>
+            </div>
+        @else
+            <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
+                <p class="text-sm text-blue-800">
+                    <strong>{{ __('First User Registration') }}</strong><br>
+                    {{ __('You are registering as the first user and will automatically receive administrator privileges.') }}
+                </p>
+            </div>
+        @endif
+
         <div class="flex items-center justify-end mt-4">
             <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
                 {{ __('Already registered?') }}

@@ -14,12 +14,12 @@
                     </button>
                     <div x-show="showExportMenu" @click.away="showExportMenu = false" class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100">
                         <div class="py-1">
-                            <a href="{{ route('transfers.export', ['format' => 'csv']) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">{{ __('CSV') }}</a>
-                            <a href="{{ route('transfers.export', ['format' => 'xlsx']) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">{{ __('Excel (XLSX)') }}</a>
-                            <a href="{{ route('transfers.export', ['format' => 'ods']) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">{{ __('OpenDocument (ODS)') }}</a>
-                            <a href="{{ route('transfers.export', ['format' => 'pdf']) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">{{ __('PDF') }}</a>
-                            <a href="{{ route('transfers.export', ['format' => 'json']) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">{{ __('JSON') }}</a>
-                            <a href="{{ route('transfers.export', ['format' => 'html']) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">{{ __('HTML') }}</a>
+                            <a href="{{ route('transfers.export', array_merge(['format' => 'csv'], request()->only(['start_date', 'end_date', 'from_account_id', 'to_account_id', 'min_amount', 'max_amount']))) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">{{ __('CSV') }}</a>
+                            <a href="{{ route('transfers.export', array_merge(['format' => 'xlsx'], request()->only(['start_date', 'end_date', 'from_account_id', 'to_account_id', 'min_amount', 'max_amount']))) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">{{ __('Excel (XLSX)') }}</a>
+                            <a href="{{ route('transfers.export', array_merge(['format' => 'ods'], request()->only(['start_date', 'end_date', 'from_account_id', 'to_account_id', 'min_amount', 'max_amount']))) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">{{ __('OpenDocument (ODS)') }}</a>
+                            <a href="{{ route('transfers.export', array_merge(['format' => 'pdf'], request()->only(['start_date', 'end_date', 'from_account_id', 'to_account_id', 'min_amount', 'max_amount']))) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">{{ __('PDF') }}</a>
+                            <a href="{{ route('transfers.export', array_merge(['format' => 'json'], request()->only(['start_date', 'end_date', 'from_account_id', 'to_account_id', 'min_amount', 'max_amount']))) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">{{ __('JSON') }}</a>
+                            <a href="{{ route('transfers.export', array_merge(['format' => 'html'], request()->only(['start_date', 'end_date', 'from_account_id', 'to_account_id', 'min_amount', 'max_amount']))) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">{{ __('HTML') }}</a>
                         </div>
                     </div>
                 </div>

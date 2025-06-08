@@ -88,6 +88,12 @@
                             {{ __('Profile') }}
                         </x-dropdown-link>
 
+                        @if(Auth::user()->isAdmin())
+                            <x-dropdown-link :href="route('admin.index')">
+                                {{ __('Admin Panel') }}
+                            </x-dropdown-link>
+                        @endif
+
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
@@ -168,6 +174,12 @@
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
+
+                @if(Auth::user()->isAdmin())
+                    <x-responsive-nav-link :href="route('admin.index')">
+                        {{ __('Admin Panel') }}
+                    </x-responsive-nav-link>
+                @endif
 
                 <!-- Authentication -->
                 <form method="POST" action="{{ route('logout') }}">

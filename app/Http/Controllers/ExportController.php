@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Transaction;
-use App\Models\Transfer;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -95,7 +94,7 @@ class ExportController extends Controller
             'xlsx' => $this->exportToXlsx($transfers, 'transfers'),
             'ods' => $this->exportToOds($transfers, 'transfers'),
             'pdf' => $this->exportToPdf($transfers, 'transfers'),
-            'json' => $this->exportToJson($transfers, 'json'),
+            'json' => $this->exportToJson($transfers, 'transfers'),
             'html' => $this->exportToHtml($transfers, 'transfers'),
             default => abort(400, 'Unsupported format'),
         };

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\CounterpartyController;
 use App\Http\Controllers\ProfileController;
@@ -34,6 +35,16 @@ Route::middleware(['auth'])->group(function () {
 
     // Help page
     Route::get('/help', [HelpController::class, 'index'])->name('help.index');
+
+    // Admin routes
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('/', [AdminController::class, 'index'])->name('index');
+        Route::get('/users', [AdminController::class, 'users'])->name('users');
+        Route::patch('/users/{user}/role', [AdminController::class, 'updateUserRole'])->name('users.update-role');
+        Route::get('/registration-keys', [AdminController::class, 'registrationKeys'])->name('registration-keys');
+        Route::post('/registration-keys/generate', [AdminController::class, 'generateKey'])->name('registration-keys.generate');
+        Route::delete('/registration-keys/{key}', [AdminController::class, 'deleteKey'])->name('registration-keys.delete');
+    });
 
     // Експортиране на транзакции
     Route::get('/transactions/export/{format}', [ExportController::class, 'exportTransactions'])
