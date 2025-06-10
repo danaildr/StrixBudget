@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
+
 class HelpController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
     /**
      * Display the help page.
      */
     public function index()
     {
-        return view('help.index');
+        $user = Auth::user();
+        $isAdmin = $user && $user->role === 'admin';
+
+        return view('help.index', compact('user', 'isAdmin'));
     }
 }

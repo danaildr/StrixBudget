@@ -1,11 +1,84 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Help & User Guide') }}
-        </h2>
-    </x-slot>
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <div class="py-12">
+        <title>{{ config('app.name', 'Laravel') }}</title>
+
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+
+        <!-- Scripts -->
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    </head>
+    <body class="font-sans antialiased">
+        <div class="min-h-screen bg-gray-100">
+            <!-- Navigation -->
+            <nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-between h-16">
+                        <div class="flex">
+                            <!-- Logo -->
+                            <div class="shrink-0 flex items-center">
+                                <a href="{{ url('/') }}">
+                                    <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+                                </a>
+                            </div>
+
+                            <!-- Navigation Links -->
+                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <a href="{{ url('/') }}" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
+                                    {{ __('Home') }}
+                                </a>
+                                <a href="{{ route('help.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 border-indigo-400 text-gray-900 text-sm font-medium leading-5 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
+                                    {{ __('Help') }}
+                                </a>
+                                @if($user)
+                                    <a href="{{ route('dashboard') }}" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
+                                        {{ __('Dashboard') }}
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- Authentication Links -->
+                        <div class="hidden sm:flex sm:items-center sm:ms-6">
+                            @if($user)
+                                <a href="{{ route('dashboard') }}" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                    {{ __('Dashboard') }}
+                                </a>
+                            @else
+                                <div class="space-x-4">
+                                    <a href="{{ route('login') }}" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                        {{ __('Log in') }}
+                                    </a>
+                                    @if (Route::has('register'))
+                                        <a href="{{ route('register') }}" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                            {{ __('Register') }}
+                                        </a>
+                                    @endif
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Page Heading -->
+            <header class="bg-white shadow">
+                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                        {{ __('User Guide & Help') }}
+                    </h2>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <main>
+                <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
@@ -17,6 +90,44 @@
                             {{ __('StrixBudget is a comprehensive personal finance management system that helps you track your income, expenses, transfers between accounts, and manage your financial relationships with counterparties.') }}
                         </p>
                     </div>
+
+                    @if(!$user)
+                    <!-- Регистрация -->
+                    <div class="mb-8 bg-blue-50 rounded-lg p-6">
+                        <h3 class="text-xl font-semibold text-blue-900 mb-4">{{ __('Getting Started - Registration') }}</h3>
+                        <p class="text-blue-800 mb-4">
+                            {{ __('To start using StrixBudget, you need to create an account. The registration process requires a special registration key for security purposes.') }}
+                        </p>
+                        <div class="space-y-3">
+                            <div class="flex items-start">
+                                <span class="text-blue-600 mr-2 font-bold">1.</span>
+                                <div>
+                                    <p class="text-blue-800"><strong>{{ __('Obtain a Registration Key') }}</strong></p>
+                                    <p class="text-blue-700 text-sm">{{ __('Contact the system administrator to get a valid registration key. This key is required to create your account.') }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-blue-600 mr-2 font-bold">2.</span>
+                                <div>
+                                    <p class="text-blue-800"><strong>{{ __('Complete Registration') }}</strong></p>
+                                    <p class="text-blue-700 text-sm">{{ __('Click the "Create Account" button, fill in your details (name, email, password), and enter the registration key when prompted.') }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-blue-600 mr-2 font-bold">3.</span>
+                                <div>
+                                    <p class="text-blue-800"><strong>{{ __('Start Using the System') }}</strong></p>
+                                    <p class="text-blue-700 text-sm">{{ __('Once registered, you can log in and start setting up your financial data following the steps below.') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-center">
+                            <a href="{{ route('register') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                {{ __('Create Account') }}
+                            </a>
+                        </div>
+                    </div>
+                    @endif
 
                     <!-- Основни функции -->
                     <div class="mb-8">
@@ -169,6 +280,53 @@
                         </div>
                     </div>
 
+                    @if($isAdmin)
+                    <!-- Админ панел -->
+                    <div class="mb-8 bg-red-50 rounded-lg p-6">
+                        <h3 class="text-xl font-semibold text-red-900 mb-4">{{ __('Administrator Panel') }}</h3>
+                        <p class="text-red-800 mb-4">
+                            {{ __('As an administrator, you have access to additional features for managing the system and users.') }}
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                            <div class="bg-white rounded-lg p-4 border border-red-200">
+                                <h4 class="font-semibold text-red-900 mb-2">{{ __('User Management') }}</h4>
+                                <p class="text-red-800 text-sm mb-2">{{ __('Manage system users and their roles:') }}</p>
+                                <ul class="text-red-700 text-sm space-y-1">
+                                    <li>• {{ __('View all registered users') }}</li>
+                                    <li>• {{ __('Change user roles (user/admin)') }}</li>
+                                    <li>• {{ __('Monitor user activity') }}</li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-4 border border-red-200">
+                                <h4 class="font-semibold text-red-900 mb-2">{{ __('Registration Keys') }}</h4>
+                                <p class="text-red-800 text-sm mb-2">{{ __('Control access to the system:') }}</p>
+                                <ul class="text-red-700 text-sm space-y-1">
+                                    <li>• {{ __('Generate new registration keys') }}</li>
+                                    <li>• {{ __('View existing keys and their usage') }}</li>
+                                    <li>• {{ __('Delete unused or expired keys') }}</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg p-4 border border-red-200">
+                            <h4 class="font-semibold text-red-900 mb-2">{{ __('How to Access Admin Panel') }}</h4>
+                            <ol class="text-red-700 text-sm space-y-1">
+                                <li><strong>1.</strong> {{ __('Look for "Admin" in the main navigation menu') }}</li>
+                                <li><strong>2.</strong> {{ __('Click on "Admin" to access the admin dashboard') }}</li>
+                                <li><strong>3.</strong> {{ __('Use the sub-menu to navigate between Users and Registration Keys') }}</li>
+                            </ol>
+                        </div>
+
+                        <div class="mt-4 text-center">
+                            <a href="{{ route('admin.index') }}" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                {{ __('Go to Admin Panel') }}
+                            </a>
+                        </div>
+                    </div>
+                    @endif
+
                     <!-- Поддръжка -->
                     <div class="bg-blue-50 rounded-lg p-6">
                         <h3 class="text-xl font-semibold text-blue-900 mb-4">{{ __('Need More Help?') }}</h3>
@@ -187,4 +345,7 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+            </main>
+        </div>
+    </body>
+</html>

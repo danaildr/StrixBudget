@@ -17,6 +17,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Help page - достъпна за всички
+Route::get('/help', [HelpController::class, 'index'])->name('help.index');
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])
         ->name('dashboard');
@@ -33,8 +36,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('transactions', TransactionController::class);
     Route::resource('transaction-types', TransactionTypeController::class);
 
-    // Help page
-    Route::get('/help', [HelpController::class, 'index'])->name('help.index');
+
 
     // Admin routes
     Route::prefix('admin')->name('admin.')->group(function () {
