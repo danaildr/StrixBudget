@@ -18,6 +18,18 @@ class BankAccountController extends Controller
     }
 
     /**
+     * Нормализира десетичен разделител от запетая към точка
+     */
+    private function normalizeDecimal($value)
+    {
+        if (is_string($value)) {
+            // Заменяме запетая с точка за десетичен разделител
+            return str_replace(',', '.', $value);
+        }
+        return $value;
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index()
@@ -39,6 +51,11 @@ class BankAccountController extends Controller
      */
     public function store(Request $request)
     {
+        // Преобразуваме запетая в точка за десетичния разделител
+        if ($request->has('initial_balance')) {
+            $request->merge(['initial_balance' => $this->normalizeDecimal($request->initial_balance)]);
+        }
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'currency' => ['required', 'string', 'size:3'],

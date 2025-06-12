@@ -54,7 +54,7 @@
                         <div>
                             <x-input-label for="amount" :value="__('Amount')" />
                             <div class="mt-1 flex rounded-md shadow-sm">
-                                <x-text-input id="amount" name="amount" type="number" step="0.01" min="0.01" class="block w-full rounded-none rounded-l-md" :value="old('amount')" required />
+                                <x-text-input id="amount" name="amount" type="text" pattern="[0-9]+([.,][0-9]{1,2})?" inputmode="decimal" class="block w-full rounded-none rounded-l-md" :value="old('amount')" required placeholder="0.00" />
                                 <span id="currency" class="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
                                     ---
                                 </span>
@@ -125,6 +125,8 @@
         <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
+                // Decimal input handling is done by the global DecimalInput component
+
                 const commonConfig = {
                     create: false,
                     sortField: {
@@ -165,6 +167,8 @@
                 if (selectedOption) {
                     currencySpan.textContent = selectedOption.dataset.currency;
                 }
+
+                // Decimal input normalization is handled by the global DecimalInput component
 
                 // Add event listeners for validation
                 typeSelect.addEventListener('change', validateExpenseAmount);

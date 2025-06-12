@@ -21,6 +21,18 @@ class TransferController extends Controller
     }
 
     /**
+     * Нормализира десетичен разделител от запетая към точка
+     */
+    private function normalizeDecimal($value)
+    {
+        if (is_string($value)) {
+            // Заменяме запетая с точка за десетичен разделител
+            return str_replace(',', '.', $value);
+        }
+        return $value;
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
@@ -85,6 +97,14 @@ class TransferController extends Controller
      */
     public function store(Request $request)
     {
+        // Преобразуваме запетая в точка за десетичните разделители
+        if ($request->has('amount_from')) {
+            $request->merge(['amount_from' => $this->normalizeDecimal($request->amount_from)]);
+        }
+        if ($request->has('exchange_rate')) {
+            $request->merge(['exchange_rate' => $this->normalizeDecimal($request->exchange_rate)]);
+        }
+
         $validated = $request->validate([
             'from_account_id' => ['required', 'exists:bank_accounts,id'],
             'to_account_id' => ['required', 'exists:bank_accounts,id', 'different:from_account_id'],

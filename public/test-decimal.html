@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест на десетични полета</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: 200px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .info {
+            background: #f0f8ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .test-results {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Тест на десетични полета</h1>
+    
+    <div class="info">
+        <h3>Инструкции за тестване:</h3>
+        <ul>
+            <li>Опитайте да въведете числа с <strong>запетая</strong> като десетичен разделител (напр. 123,45)</li>
+            <li>Опитайте да въведете числа с <strong>точка</strong> като десетичен разделител (напр. 123.45)</li>
+            <li>За обменния курс опитайте с <strong>6 знака</strong> (напр. 1,234567 или 1.234567)</li>
+            <li>Опитайте да въведете невалидни символи (букви, специални знаци)</li>
+            <li>Опитайте да въведете повече от позволените десетични знаци</li>
+            <li>Кликнете извън полето (blur) за да видите автоматичното форматиране</li>
+        </ul>
+    </div>
+
+    <form>
+        <div class="form-group">
+            <label for="amount">Сума на транзакция (2 десетични знака, мин. 0.01):</label>
+            <input type="text" id="amount" name="amount" placeholder="0.00">
+        </div>
+
+        <div class="form-group">
+            <label for="amount_from">Сума на трансфер (2 десетични знака, мин. 0.01):</label>
+            <input type="text" id="amount_from" name="amount_from" placeholder="0.00">
+        </div>
+
+        <div class="form-group">
+            <label for="initial_balance">Начално салдо (2 десетични знака, мин. 0):</label>
+            <input type="text" id="initial_balance" name="initial_balance" placeholder="0.00">
+        </div>
+
+        <div class="form-group">
+            <label for="exchange_rate">Обменен курс (6 десетични знака, мин. 0.000001):</label>
+            <input type="text" id="exchange_rate" name="exchange_rate" placeholder="1.000000">
+        </div>
+
+        <div class="form-group">
+            <label for="custom_decimal">Персонализирано поле (клас decimal-input):</label>
+            <input type="text" id="custom_decimal" name="custom_decimal" class="decimal-input" placeholder="0.00">
+        </div>
+    </form>
+
+    <div class="test-results">
+        <h3>Информация за браузъра:</h3>
+        <p><strong>User Agent:</strong> <span id="userAgent"></span></p>
+        <p><strong>Браузър:</strong> <span id="browserName"></span></p>
+        
+        <h3>Тестови резултати:</h3>
+        <p>Въведете стойности в полетата по-горе и проверете дали:</p>
+        <ul>
+            <li>Запетаята се заменя автоматично с точка</li>
+            <li>Невалидните символи се премахват</li>
+            <li>Десетичните знаци се ограничават правилно</li>
+            <li>При загуба на фокус стойността се форматира правилно</li>
+        </ul>
+    </div>
+
+    <script src="js/decimal-input.js"></script>
+    <script>
+        // Показваме информация за браузъра
+        document.getElementById('userAgent').textContent = navigator.userAgent;
+        
+        // Опростено определяне на браузъра
+        let browserName = 'Unknown';
+        if (navigator.userAgent.indexOf('Firefox') > -1) {
+            browserName = 'Firefox';
+        } else if (navigator.userAgent.indexOf('Chrome') > -1) {
+            browserName = 'Chrome';
+        } else if (navigator.userAgent.indexOf('Safari') > -1) {
+            browserName = 'Safari';
+        } else if (navigator.userAgent.indexOf('Edge') > -1) {
+            browserName = 'Edge';
+        } else if (navigator.userAgent.indexOf('Konqueror') > -1) {
+            browserName = 'Konqueror';
+        }
+        
+        document.getElementById('browserName').textContent = browserName;
+        
+        // Добавяме event listeners за демонстрация
+        const inputs = document.querySelectorAll('input[type="text"]');
+        inputs.forEach(input => {
+            input.addEventListener('input', function() {
+                console.log(`Input ${this.name}: ${this.value}`);
+            });
+            
+            input.addEventListener('blur', function() {
+                console.log(`Blur ${this.name}: ${this.value}`);
+            });
+        });
+    </script>
+</body>
+</html>

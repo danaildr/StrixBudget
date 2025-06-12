@@ -11,6 +11,7 @@ use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\HelpController;
+use App\Http\Controllers\PowerUserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -46,6 +47,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/registration-keys', [AdminController::class, 'registrationKeys'])->name('registration-keys');
         Route::post('/registration-keys/generate', [AdminController::class, 'generateKey'])->name('registration-keys.generate');
         Route::delete('/registration-keys/{key}', [AdminController::class, 'deleteKey'])->name('registration-keys.delete');
+    });
+
+    // Power User routes
+    Route::prefix('power-user')->name('power-user.')->group(function () {
+        Route::get('/registration-keys', [PowerUserController::class, 'registrationKeys'])->name('registration-keys');
+        Route::post('/registration-keys/generate', [PowerUserController::class, 'generateKey'])->name('registration-keys.generate');
+        Route::delete('/registration-keys/{key}', [PowerUserController::class, 'deleteKey'])->name('registration-keys.delete');
     });
 
     // Експортиране на транзакции

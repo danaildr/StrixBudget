@@ -106,11 +106,27 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if user has limited access
+     * Check if user is power user
      */
-    public function isLimited(): bool
+    public function isPowerUser(): bool
     {
-        return $this->role === 'limited';
+        return $this->role === 'power_user';
+    }
+
+    /**
+     * Check if user can manage registration keys
+     */
+    public function canManageRegistrationKeys(): bool
+    {
+        return $this->isAdmin() || $this->isPowerUser();
+    }
+
+    /**
+     * Check if user can manage user roles
+     */
+    public function canManageUserRoles(): bool
+    {
+        return $this->isAdmin();
     }
 
     /**

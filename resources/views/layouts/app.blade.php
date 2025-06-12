@@ -13,7 +13,10 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-        
+
+        <!-- Decimal Input Handler -->
+        <script src="{{ asset('js/decimal-input.js') }}"></script>
+
         <!-- Additional Styles -->
         @stack('styles')
     </head>

@@ -14,6 +14,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\SetLocale::class,
         ]);
+
+        $middleware->alias([
+            'power_user_or_admin' => \App\Http\Middleware\EnsurePowerUserOrAdmin::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

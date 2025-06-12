@@ -75,7 +75,7 @@
                                                     <select name="role" onchange="this.form.submit()" class="text-sm border-gray-300 rounded-md">
                                                         <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>Admin</option>
                                                         <option value="user" {{ $user->role === 'user' ? 'selected' : '' }}>User</option>
-                                                        <option value="limited" {{ $user->role === 'limited' ? 'selected' : '' }}>Limited</option>
+                                                        <option value="power_user" {{ $user->role === 'power_user' ? 'selected' : '' }}>Power User</option>
                                                     </select>
                                                 </form>
                                             @else

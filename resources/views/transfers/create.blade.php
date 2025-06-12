@@ -70,15 +70,16 @@
                         <div>
                             <x-input-label for="amount_from" :value="__('Amount')" />
                             <div class="mt-1 flex rounded-md shadow-sm">
-                                <x-text-input 
-                                    id="amount_from" 
-                                    name="amount_from" 
-                                    type="number" 
-                                    step="0.01" 
-                                    min="0.01" 
+                                <x-text-input
+                                    id="amount_from"
+                                    name="amount_from"
+                                    type="text"
+                                    pattern="[0-9]+([.,][0-9]{1,2})?"
+                                    inputmode="decimal"
                                     :value="old('amount_from')"
-                                    class="block w-full rounded-none rounded-l-md" 
-                                    required 
+                                    class="block w-full rounded-none rounded-l-md"
+                                    required
+                                    placeholder="0.00"
                                 />
                                 <span id="from_currency" class="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
                                     {{ $accounts->first()?->currency ?? '---' }}
@@ -90,15 +91,16 @@
 
                         <div>
                             <x-input-label for="exchange_rate" :value="__('Exchange Rate')" />
-                            <x-text-input 
-                                id="exchange_rate" 
-                                name="exchange_rate" 
-                                type="number" 
-                                step="0.000001" 
-                                min="0.000001" 
-                                :value="old('exchange_rate', 1)" 
+                            <x-text-input
+                                id="exchange_rate"
+                                name="exchange_rate"
+                                type="text"
+                                pattern="[0-9]+([.,][0-9]{1,6})?"
+                                inputmode="decimal"
+                                :value="old('exchange_rate', 1)"
                                 class="mt-1 block w-full"
-                                required 
+                                required
+                                placeholder="1.000000"
                             />
                             <div id="exchange_rate_info" class="mt-2 text-sm text-gray-600"></div>
                             <x-input-error class="mt-2" :messages="$errors->get('exchange_rate')" />
@@ -125,10 +127,14 @@
     @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', function() {
+                // Decimal input handling is done by the global DecimalInput component
+
                 const fromAccountSelect = document.getElementById('from_account_id');
                 const toAccountSelect = document.getElementById('to_account_id');
                 const amountInput = document.getElementById('amount_from');
                 const exchangeRateInput = document.getElementById('exchange_rate');
+
+                // Decimal input normalization is handled by the global DecimalInput component
                 const fromCurrencySpan = document.getElementById('from_currency');
                 const balanceInfo = document.getElementById('balance_info');
                 const exchangeRateInfo = document.getElementById('exchange_rate_info');

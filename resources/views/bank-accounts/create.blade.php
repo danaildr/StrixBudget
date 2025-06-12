@@ -33,15 +33,16 @@
                         <div>
                             <x-input-label for="initial_balance" :value="__('Initial Balance')" />
                             <div class="mt-1 flex rounded-md shadow-sm">
-                                <x-text-input 
-                                    id="initial_balance" 
-                                    name="initial_balance" 
-                                    type="number" 
-                                    step="0.01" 
-                                    min="0" 
-                                    class="block w-full rounded-none rounded-l-md" 
-                                    :value="old('initial_balance', '0.00')" 
-                                    required 
+                                <x-text-input
+                                    id="initial_balance"
+                                    name="initial_balance"
+                                    type="text"
+                                    pattern="[0-9]+([.,][0-9]{1,2})?"
+                                    inputmode="decimal"
+                                    class="block w-full rounded-none rounded-l-md"
+                                    :value="old('initial_balance', '0.00')"
+                                    required
+                                    placeholder="0.00"
                                 />
                                 <span id="selected_currency" class="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
                                     ---

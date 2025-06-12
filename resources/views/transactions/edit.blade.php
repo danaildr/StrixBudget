@@ -55,15 +55,16 @@
                         <div>
                             <x-input-label for="amount" :value="__('Amount')" />
                             <div class="mt-1 flex rounded-md shadow-sm">
-                                <x-text-input 
-                                    id="amount" 
-                                    name="amount" 
-                                    type="number" 
-                                    step="0.01" 
-                                    min="0.01" 
-                                    :value="old('amount', $transaction->amount)" 
-                                    class="block w-full rounded-none rounded-l-md" 
-                                    required 
+                                <x-text-input
+                                    id="amount"
+                                    name="amount"
+                                    type="text"
+                                    pattern="[0-9]+([.,][0-9]{1,2})?"
+                                    inputmode="decimal"
+                                    :value="old('amount', $transaction->amount)"
+                                    class="block w-full rounded-none rounded-l-md"
+                                    required
+                                    placeholder="0.00"
                                 />
                                 <span id="currency" class="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
                                     {{ $transaction->currency }}
@@ -150,6 +151,8 @@
         <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
+                // Decimal input handling is done by the global DecimalInput component
+
                 const bankAccountSelect = new TomSelect('#bank_account_id', {
                     sortField: {
                         field: "text",
@@ -175,6 +178,8 @@
                 const currencySpan = document.getElementById('currency');
                 const balanceInfo = document.getElementById('balance_info');
                 const typeSelect = document.getElementById('type');
+
+                // Decimal input normalization is handled by the global DecimalInput component
 
                 function validateExpenseAmount() {
                     if (typeSelect.value !== 'expense') {

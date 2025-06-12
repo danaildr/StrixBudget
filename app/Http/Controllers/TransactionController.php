@@ -22,6 +22,18 @@ class TransactionController extends Controller
         $this->middleware('auth');
     }
 
+    /**
+     * Нормализира десетичен разделител от запетая към точка
+     */
+    private function normalizeDecimal($value)
+    {
+        if (is_string($value)) {
+            // Заменяме запетая с точка за десетичен разделител
+            return str_replace(',', '.', $value);
+        }
+        return $value;
+    }
+
     /** @return \Illuminate\View\View */
     public function index(Request $request)
     {
@@ -94,6 +106,11 @@ class TransactionController extends Controller
     /** @return \Illuminate\Http\RedirectResponse */
     public function store(Request $request)
     {
+        // Преобразуваме запетая в точка за десетичния разделител
+        if ($request->has('amount')) {
+            $request->merge(['amount' => $this->normalizeDecimal($request->amount)]);
+        }
+
         $validated = $request->validate([
             'bank_account_id' => ['required', 'exists:bank_accounts,id'],
             'type' => ['required', 'in:income,expense'],
@@ -170,6 +187,11 @@ class TransactionController extends Controller
     public function update(Request $request, Transaction $transaction)
     {
         $this->authorize('update', $transaction);
+
+        // Преобразуваме запетая в точка за десетичния разделител
+        if ($request->has('amount')) {
+            $request->merge(['amount' => $this->normalizeDecimal($request->amount)]);
+        }
 
         $validated = $request->validate([
             'bank_account_id' => ['required', 'exists:bank_accounts,id'],

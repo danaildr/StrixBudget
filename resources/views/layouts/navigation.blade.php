@@ -92,6 +92,10 @@
                             <x-dropdown-link :href="route('admin.index')">
                                 {{ __('Admin Panel') }}
                             </x-dropdown-link>
+                        @elseif(Auth::user()->isPowerUser())
+                            <x-dropdown-link :href="route('power-user.registration-keys')">
+                                {{ __('Power User Panel') }}
+                            </x-dropdown-link>
                         @endif
 
                         <!-- Authentication -->
@@ -178,6 +182,10 @@
                 @if(Auth::user()->isAdmin())
                     <x-responsive-nav-link :href="route('admin.index')">
                         {{ __('Admin Panel') }}
+                    </x-responsive-nav-link>
+                @elseif(Auth::user()->isPowerUser())
+                    <x-responsive-nav-link :href="route('power-user.registration-keys')">
+                        {{ __('Power User Panel') }}
                     </x-responsive-nav-link>
                 @endif
 
