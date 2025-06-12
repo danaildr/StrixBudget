@@ -207,28 +207,39 @@ class TransactionController extends Controller
         return DB::transaction(function () use ($request, $validated, $transaction) {
             /** @var User $user */
             $user = Auth::user();
-            $bankAccount = $user->bankAccounts()->findOrFail($validated['bank_account_id']);
+            $newBankAccount = $user->bankAccounts()->findOrFail($validated['bank_account_id']);
+            $oldBankAccount = $transaction->bankAccount;
 
-            // Първо възстановяваме предишния баланс
-            if ($transaction->type === 'income') {
-                $transaction->bankAccount->withdraw($transaction->amount);
+            // Запазваме старите стойности преди обновяването
+            $oldType = $transaction->type;
+            $oldAmount = $transaction->amount;
+            $oldBankAccountId = $transaction->bank_account_id;
+
+            // Първо възстановяваме предишния баланс от старата сметка
+            if ($oldType === 'income') {
+                $oldBankAccount->withdraw($oldAmount);
             } else {
-                $transaction->bankAccount->deposit($transaction->amount);
+                $oldBankAccount->deposit($oldAmount);
             }
 
-            // Проверяваме дали има достатъчно средства за новата сума ако е разход
-            if ($validated['type'] === 'expense' && !$bankAccount->hasSufficientFunds($validated['amount'])) {
-                // Възстановяваме оригиналния баланс
-                if ($transaction->type === 'income') {
-                    $transaction->bankAccount->deposit($transaction->amount);
+            // Ако сметката е различна, refresh новата сметка за да получим актуалния баланс
+            if ($oldBankAccountId !== $validated['bank_account_id']) {
+                $newBankAccount->refresh();
+            }
+
+            // Проверяваме дали има достатъчно средства в новата сметка за новата сума ако е разход
+            if ($validated['type'] === 'expense' && !$newBankAccount->hasSufficientFunds($validated['amount'])) {
+                // Възстановяваме оригиналния баланс в старата сметка
+                if ($oldType === 'income') {
+                    $oldBankAccount->deposit($oldAmount);
                 } else {
-                    $transaction->bankAccount->withdraw($transaction->amount);
+                    $oldBankAccount->withdraw($oldAmount);
                 }
 
                 $formattedAmount = number_format($validated['amount'], 2, ',', ' ');
-                $formattedBalance = number_format($bankAccount->balance, 2, ',', ' ');
+                $formattedBalance = number_format($newBankAccount->balance, 2, ',', ' ');
                 return back()
-                    ->withErrors(['amount' => "Недостатъчна наличност. Опитвате да преведете {$formattedAmount} {$bankAccount->currency}, но разполагате само с {$formattedBalance} {$bankAccount->currency}."])
+                    ->withErrors(['amount' => "Недостатъчна наличност. Опитвате да преведете {$formattedAmount} {$newBankAccount->currency}, но разполагате само с {$formattedBalance} {$newBankAccount->currency}."])
                     ->withInput();
             }
 
@@ -244,22 +255,27 @@ class TransactionController extends Controller
 
             // Актуализираме транзакцията
             $transaction->update([
-                'bank_account_id' => $bankAccount->id,
+                'bank_account_id' => $newBankAccount->id,
                 'counterparty_id' => $validated['counterparty_id'],
                 'transaction_type_id' => $validated['transaction_type_id'],
                 'type' => $validated['type'],
                 'amount' => $validated['amount'],
-                'currency' => $bankAccount->currency,
+                'currency' => $newBankAccount->currency,
                 'description' => $validated['description'],
                 'attachment_path' => $validated['attachment_path'] ?? $transaction->attachment_path,
                 'executed_at' => $validated['executed_at'],
             ]);
 
-            // Актуализираме новия баланс
+            // Прилагаме новия баланс в новата сметка
+            // Ако сметката е същата, тя вече е била обновена по-горе, така че трябва да използваме fresh инстанция
+            if ($oldBankAccountId === $validated['bank_account_id']) {
+                $newBankAccount->refresh();
+            }
+
             if ($validated['type'] === 'income') {
-                $bankAccount->deposit($validated['amount']);
+                $newBankAccount->deposit($validated['amount']);
             } else {
-                $bankAccount->withdraw($validated['amount']);
+                $newBankAccount->withdraw($validated['amount']);
             }
 
             return redirect()->route('transactions.index')
