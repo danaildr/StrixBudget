@@ -20,6 +20,35 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application Configuration Constants
+    |--------------------------------------------------------------------------
+    */
+
+    'pagination' => [
+        'default_per_page' => env('PAGINATION_DEFAULT_PER_PAGE', 25),
+        'admin_per_page' => env('PAGINATION_ADMIN_PER_PAGE', 20),
+        'details_per_page' => env('PAGINATION_DETAILS_PER_PAGE', 10),
+    ],
+
+    'file_uploads' => [
+        'max_size_kb' => env('FILE_UPLOAD_MAX_SIZE_KB', 5120),
+        'allowed_mimes' => env('FILE_UPLOAD_ALLOWED_MIMES', 'jpg,jpeg,png,pdf'),
+    ],
+
+    'cache_ttl' => [
+        'exchange_rates' => env('CACHE_TTL_EXCHANGE_RATES', 3600),
+        'user_stats' => env('CACHE_TTL_USER_STATS', 1800),
+    ],
+
+    'business' => [
+        'supported_currencies' => ['EUR', 'USD', 'BGN', 'GBP'],
+        'transaction_types' => ['income', 'expense'],
+        'user_roles' => ['user', 'power_user', 'admin'],
+        'registration_key_length' => env('REGISTRATION_KEY_LENGTH', 32),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |

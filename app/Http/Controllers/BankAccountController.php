@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\BankAccount;
 use App\Models\Transaction;
 use App\Models\Transfer;
+use App\Traits\NormalizesDecimals;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -12,22 +13,13 @@ use Illuminate\Validation\Rule;
 
 class BankAccountController extends Controller
 {
+    use NormalizesDecimals;
     public function __construct()
     {
         $this->middleware('auth');
     }
 
-    /**
-     * Нормализира десетичен разделител от запетая към точка
-     */
-    private function normalizeDecimal($value)
-    {
-        if (is_string($value)) {
-            // Заменяме запетая с точка за десетичен разделител
-            return str_replace(',', '.', $value);
-        }
-        return $value;
-    }
+    // normalizeDecimal method moved to NormalizesDecimals trait
 
     /**
      * Display a listing of the resource.
@@ -56,13 +48,7 @@ class BankAccountController extends Controller
             $request->merge(['initial_balance' => $this->normalizeDecimal($request->initial_balance)]);
         }
 
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'currency' => ['required', 'string', 'size:3'],
-            'is_active' => ['boolean'],
-            'is_default' => ['boolean'],
-            'initial_balance' => ['required', 'numeric', 'min:0', 'max:999999999.99']
-        ]);
+        $validated = $request->validate($this->getBankAccountValidationRules());
 
         DB::transaction(function () use ($validated, $request) {
             // If this account is set as default, remove default from other accounts

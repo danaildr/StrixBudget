@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -19,17 +20,23 @@ class Counterparty extends Model
         'user_id'
     ];
 
-    protected $appends = [
-        'transactions_count',
-        'total_income',
-        'total_expenses'
-    ];
+    // Remove appends to avoid N+1 queries - calculate these when needed
+    // protected $appends = [
+    //     'transactions_count',
+    //     'total_income',
+    //     'total_expenses'
+    // ];
 
     /**
-     * Get the total number of transactions.
+     * Get the total number of transactions (use with loadCount for performance).
      */
     public function getTransactionsCountAttribute(): int
     {
+        // Check if already loaded via loadCount
+        if (isset($this->attributes['transactions_count'])) {
+            return $this->attributes['transactions_count'];
+        }
+
         return $this->transactions()->count();
     }
 
@@ -51,6 +58,24 @@ class Counterparty extends Model
         return $this->transactions()
             ->where('type', 'expense')
             ->sum('amount');
+    }
+
+    /**
+     * Scope to load statistics efficiently
+     */
+    public function scopeWithStatistics($query)
+    {
+        return $query->withCount('transactions')
+            ->addSelect([
+                'total_income' => DB::table('transactions')
+                    ->selectRaw('COALESCE(SUM(amount), 0)')
+                    ->whereColumn('counterparty_id', 'counterparties.id')
+                    ->where('type', 'income'),
+                'total_expenses' => DB::table('transactions')
+                    ->selectRaw('COALESCE(SUM(amount), 0)')
+                    ->whereColumn('counterparty_id', 'counterparties.id')
+                    ->where('type', 'expense')
+            ]);
     }
 
     /**

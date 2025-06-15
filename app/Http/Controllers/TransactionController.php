@@ -6,6 +6,8 @@ use App\Models\Transaction;
 use App\Models\TransactionType;
 use App\Models\Counterparty;
 use App\Models\User;
+use App\Traits\HasDateFilters;
+use App\Traits\NormalizesDecimals;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -14,6 +16,8 @@ use Illuminate\Support\Facades\Storage;
 
 class TransactionController extends Controller
 {
+    use HasDateFilters, NormalizesDecimals;
+
     /** @var User */
     protected $user;
 
@@ -22,56 +26,38 @@ class TransactionController extends Controller
         $this->middleware('auth');
     }
 
-    /**
-     * Нормализира десетичен разделител от запетая към точка
-     */
-    private function normalizeDecimal($value)
-    {
-        if (is_string($value)) {
-            // Заменяме запетая с точка за десетичен разделител
-            return str_replace(',', '.', $value);
-        }
-        return $value;
-    }
+    // normalizeDecimal method moved to NormalizesDecimals trait
 
     /** @return \Illuminate\View\View */
     public function index(Request $request)
     {
         /** @var User $user */
         $user = Auth::user();
-        
+
         $query = $user->transactions()
             ->with(['bankAccount', 'counterparty', 'transactionType']);
 
-        // Филтър по дата
-        if ($request->filled('start_date')) {
-            $query->whereDate('executed_at', '>=', $request->start_date);
-        }
-        if ($request->filled('end_date')) {
-            $query->whereDate('executed_at', '<=', $request->end_date);
-        }
+        // Apply date filters using trait
+        $this->applyDateFilters($query, $request);
 
-        // Филтър по тип транзакция (income/expense)
+        // Apply other filters
         if ($request->filled('type')) {
             $query->where('type', $request->type);
         }
 
-        // Филтър по банкова сметка
         if ($request->filled('bank_account_id')) {
             $query->where('bank_account_id', $request->bank_account_id);
         }
 
-        // Филтър по контрагент
         if ($request->filled('counterparty_id')) {
             $query->where('counterparty_id', $request->counterparty_id);
         }
 
-        // Филтър по тип транзакция (категория)
         if ($request->filled('transaction_type_id')) {
             $query->where('transaction_type_id', $request->transaction_type_id);
         }
 
-        $transactions = $query->latest('executed_at')->paginate(25);
+        $transactions = $query->latest('executed_at')->paginate($this->getPaginationSize());
         
         // Данни за филтрите
         $bankAccounts = $user->bankAccounts;
@@ -111,16 +97,7 @@ class TransactionController extends Controller
             $request->merge(['amount' => $this->normalizeDecimal($request->amount)]);
         }
 
-        $validated = $request->validate([
-            'bank_account_id' => ['required', 'exists:bank_accounts,id'],
-            'type' => ['required', 'in:income,expense'],
-            'amount' => ['required', 'numeric', 'min:0.01'],
-            'description' => ['nullable', 'string'],
-            'executed_at' => ['required', 'date', 'before_or_equal:now'],
-            'attachment' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
-            'counterparty_id' => ['required', 'exists:counterparties,id'],
-            'transaction_type_id' => ['required', 'exists:transaction_types,id'],
-        ]);
+        $validated = $request->validate($this->getTransactionValidationRules());
 
         return DB::transaction(function () use ($request, $validated) {
             /** @var User $user */
@@ -193,16 +170,7 @@ class TransactionController extends Controller
             $request->merge(['amount' => $this->normalizeDecimal($request->amount)]);
         }
 
-        $validated = $request->validate([
-            'bank_account_id' => ['required', 'exists:bank_accounts,id'],
-            'type' => ['required', 'in:income,expense'],
-            'amount' => ['required', 'numeric', 'min:0.01'],
-            'description' => ['nullable', 'string'],
-            'executed_at' => ['required', 'date', 'before_or_equal:now'],
-            'attachment' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
-            'counterparty_id' => ['required', 'exists:counterparties,id'],
-            'transaction_type_id' => ['required', 'exists:transaction_types,id'],
-        ]);
+        $validated = $request->validate($this->getTransactionValidationRules());
 
         return DB::transaction(function () use ($request, $validated, $transaction) {
             /** @var User $user */

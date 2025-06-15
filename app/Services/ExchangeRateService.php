@@ -8,7 +8,18 @@ use Illuminate\Support\Facades\Log;
 
 class ExchangeRateService
 {
-    private const ECB_API_URL = 'https://open.er-api.com/v6/latest/EUR';
+    private string $apiUrl;
+    private int $cacheTimeout;
+    private int $apiTimeout;
+    private int $apiRetries;
+
+    public function __construct()
+    {
+        $this->apiUrl = config('strix.api.exchange_rate_url');
+        $this->cacheTimeout = config('strix.cache_ttl.exchange_rates');
+        $this->apiTimeout = config('strix.api.exchange_rate_timeout');
+        $this->apiRetries = config('strix.api.exchange_rate_retries');
+    }
 
     public function getEuroRate(string $currency): float
     {
@@ -18,11 +29,13 @@ class ExchangeRateService
 
         Log::info("Getting exchange rate for {$currency}");
 
-        return Cache::remember("exchange_rate_{$currency}", 3600, function () use ($currency) {
+        return Cache::remember("exchange_rate_{$currency}", $this->cacheTimeout, function () use ($currency) {
             try {
                 Log::info("Cache miss for {$currency}, calling API");
-                
-                $response = Http::get(self::ECB_API_URL);
+
+                $response = Http::timeout($this->apiTimeout)
+                    ->retry($this->apiRetries, 1000)
+                    ->get($this->apiUrl);
 
                 Log::info("API request URL: " . $response->effectiveUri());
 

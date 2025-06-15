@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Counterparty;
+use App\Traits\HasDateFilters;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -11,7 +12,7 @@ use App\Models\User;
 
 class CounterpartyController extends Controller
 {
-    use AuthorizesRequests, ValidatesRequests;
+    use AuthorizesRequests, ValidatesRequests, HasDateFilters;
 
     public function __construct()
     {
@@ -21,21 +22,18 @@ class CounterpartyController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $query = Auth::user()->counterparties()
-            ->when(request('search'), function ($query, $search) {
-                $search = mb_strtolower('%' . $search . '%');
-                $query->where(function ($q) use ($search) {
-                    $q->whereRaw('lower(name) like ?', [$search])
-                      ->orWhereRaw('lower(email) like ?', [$search])
-                      ->orWhereRaw('lower(phone) like ?', [$search]);
-                });
-            })
-            ->orderBy('name');
-        
-        $counterparties = $query->paginate(25);
-        
+        $query = Auth::user()->counterparties();
+
+        // Apply search filter using trait
+        $this->applySearchFilter($query, $request, ['name', 'email', 'phone']);
+
+        // Load statistics efficiently to avoid N+1 queries
+        $query->withStatistics()->orderBy('name');
+
+        $counterparties = $query->paginate($this->getPaginationSize('search'));
+
         return view('counterparties.index', compact('counterparties'));
     }
 
