@@ -1,9 +1,12 @@
-# Финансово Приложение
+# StrixBudget - Финансово Приложение
 
 Уеб базирано приложение за управление на лични финанси, разработено с Laravel. Приложението позволява управление на множество банкови сметки, проследяване на транзакции и трансфери между сметки.
 
+**🚀 Новост: Приложението вече включва пълноценен REST API за интеграция с външни приложения!**
+
 ## Основни функционалности
 
+### 🌐 Уеб интерфейс
 - Управление на множество банкови сметки
 - Поддръжка на различни валути
 - Проследяване на приходи и разходи
@@ -12,6 +15,14 @@
 - Управление на контрагенти
 - Експорт на данни в различни формати (CSV, XLSX, PDF)
 - Импорт на данни от файлове
+
+### 🔌 REST API
+- Пълноценен REST API за всички функционалности
+- JWT аутентикация с Laravel Sanctum
+- 37+ API endpoints за пълно управление на данните
+- Поддръжка за mobile и desktop приложения
+- Интеграция с трети страни
+- Подробна API документация
 
 ## Системни изисквания
 
@@ -80,12 +91,18 @@ DB_PASSWORD=your_database_password
 php artisan migrate
 ```
 
-8. Компилиране на frontend ресурсите:
+8. Публикуване на Sanctum миграциите за API:
+```bash
+php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+php artisan migrate
+```
+
+9. Компилиране на frontend ресурсите:
 ```bash
 npm run build
 ```
 
-9. Конфигуриране на планировчика (cron) за автоматични задачи:
+10. Конфигуриране на планировчика (cron) за автоматични задачи:
 Добавете следния ред към crontab:
 ```
 * * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
@@ -100,6 +117,22 @@ SESSION_DRIVER=database
 SESSION_LIFETIME=120
 SESSION_ENCRYPT=true
 ```
+
+### API Конфигурация
+За правилна работа на API, добавете следните настройки в `.env`:
+```
+# API настройки
+SANCTUM_STATEFUL_DOMAINS=localhost,localhost:3000,127.0.0.1,127.0.0.1:8000
+SESSION_DRIVER=database
+
+# За production добавете вашия домейн:
+# SANCTUM_STATEFUL_DOMAINS=yourdomain.com,api.yourdomain.com
+```
+
+**⚠️ Важно за production:**
+- Използвайте HTTPS за всички API заявки
+- Конфигурирайте правилно CORS настройките
+- Добавете rate limiting за API endpoints
 
 ### Права за достъп
 Уверете се, че следните директории и техните поддиректории имат правилните права за достъп:
@@ -127,6 +160,104 @@ npm run dev
 ```bash
 php artisan test
 ```
+
+## 🔌 API Използване
+
+### Бърз старт с API
+
+1. **Стартиране на сървъра:**
+```bash
+php artisan serve
+```
+
+2. **Login и получаване на токен:**
+```bash
+curl -X POST http://localhost:8000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "your@email.com", "password": "your_password"}'
+```
+
+3. **Използване на API с токен:**
+```bash
+# Получаване на банкови сметки
+curl -X GET http://localhost:8000/api/bank-accounts \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE"
+
+# Създаване на нова банкова сметка
+curl -X POST http://localhost:8000/api/bank-accounts \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "My Account", "currency": "EUR", "balance": 1000}'
+```
+
+### JavaScript пример
+
+```javascript
+// Login
+const response = await fetch('/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        email: 'user@example.com',
+        password: 'password'
+    })
+});
+
+const { data } = await response.json();
+const token = data.token;
+
+// Използване на API
+const accounts = await fetch('/api/bank-accounts', {
+    headers: { 'Authorization': `Bearer ${token}` }
+});
+
+const accountsData = await accounts.json();
+console.log(accountsData.data); // Списък с банкови сметки
+```
+
+### Python пример
+
+```python
+import requests
+
+# Login
+login_response = requests.post('http://localhost:8000/api/auth/login',
+    json={'email': 'user@example.com', 'password': 'password'})
+
+token = login_response.json()['data']['token']
+
+# Използване на API
+headers = {'Authorization': f'Bearer {token}'}
+
+# Получаване на банкови сметки
+accounts = requests.get('http://localhost:8000/api/bank-accounts', headers=headers)
+print(accounts.json())
+
+# Създаване на транзакция
+transaction_data = {
+    'bank_account_id': 1,
+    'type': 'income',
+    'amount': 500.00,
+    'currency': 'EUR',
+    'description': 'Salary',
+    'executed_at': '2025-06-18'
+}
+
+transaction = requests.post('http://localhost:8000/api/transactions',
+    json=transaction_data, headers=headers)
+print(transaction.json())
+```
+
+### Налични API endpoints
+
+- **Аутентикация**: `/api/auth/*`
+- **Банкови сметки**: `/api/bank-accounts`
+- **Транзакции**: `/api/transactions`
+- **Трансфери**: `/api/transfers`
+- **Контрагенти**: `/api/counterparties`
+- **Типове транзакции**: `/api/transaction-types`
+
+**📖 Пълна API документация**: Вижте `API_DOCUMENTATION.md` за подробна документация на всички endpoints.
 
 ## Лицензи
 
