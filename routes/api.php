@@ -20,6 +20,36 @@ use App\Http\Controllers\Api\TransactionTypeApiController;
 |
 */
 
+// API Health Check and Information
+Route::get('/', function () {
+    return response()->json([
+        'success' => true,
+        'message' => 'StrixBudget API is running',
+        'version' => '1.0.0',
+        'timestamp' => now()->toISOString(),
+        'endpoints' => [
+            'authentication' => [
+                'login' => 'POST /api/auth/login',
+                'user' => 'GET /api/auth/user',
+                'logout' => 'POST /api/auth/logout',
+                'refresh' => 'POST /api/auth/refresh',
+                'profile' => 'PUT /api/auth/profile',
+                'password' => 'PUT /api/auth/password',
+                'statistics' => 'GET /api/auth/statistics'
+            ],
+            'resources' => [
+                'bank_accounts' => '/api/bank-accounts',
+                'transactions' => '/api/transactions',
+                'transfers' => '/api/transfers',
+                'counterparties' => '/api/counterparties',
+                'transaction_types' => '/api/transaction-types'
+            ]
+        ],
+        'documentation' => 'See API_DOCUMENTATION.md for detailed information',
+        'total_endpoints' => 37
+    ]);
+});
+
 // Public authentication routes
 Route::prefix('auth')->group(function () {
     Route::post('login', [AuthApiController::class, 'login']);
