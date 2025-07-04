@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\SettingsHelper;
 use App\Models\RegistrationKey;
+use App\Models\SystemSetting;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -35,7 +37,9 @@ class AdminController extends Controller
             'available_keys' => RegistrationKey::where('is_used', false)->count(),
         ];
 
-        return view('admin.index', compact('stats'));
+        $serverStatus = $this->getServerStatus();
+
+        return view('admin.index', compact('stats', 'serverStatus'));
     }
 
     /**
@@ -125,5 +129,92 @@ class AdminController extends Controller
 
         $key->delete();
         return back()->with('success', 'Registration key deleted.');
+    }
+
+    /**
+     * Display system settings page
+     */
+    public function settings()
+    {
+        $settings = SystemSetting::getGrouped();
+        return view('admin.settings', compact('settings'));
+    }
+
+    /**
+     * Update system settings
+     */
+    public function updateSettings(Request $request)
+    {
+        $request->validate([
+            'site_name' => ['required', 'string', 'max:255'],
+            'site_icon' => ['nullable', 'image', 'max:2048'],
+            'favicon' => ['nullable', 'image', 'max:1024'],
+        ]);
+
+        // Update site name
+        SystemSetting::set('site_name', $request->site_name);
+
+        // Handle file uploads
+        if ($request->hasFile('site_icon')) {
+            $path = $request->file('site_icon')->store('settings', 'public');
+            SystemSetting::set('site_icon', $path);
+        }
+
+        if ($request->hasFile('favicon')) {
+            $path = $request->file('favicon')->store('settings', 'public');
+            SystemSetting::set('favicon', $path);
+        }
+
+        // Clear settings cache
+        SettingsHelper::clearCache();
+
+        return back()->with('success', 'System settings updated successfully.');
+    }
+
+    /**
+     * Get server status information
+     */
+    public function getServerStatus()
+    {
+        return [
+            'php_version' => PHP_VERSION,
+            'app_version' => '0.1-beta-20250704',
+            'memory_usage' => $this->formatBytes(memory_get_usage(true)),
+            'memory_peak' => $this->formatBytes(memory_get_peak_usage(true)),
+            'memory_limit' => ini_get('memory_limit'),
+            'disk_free' => $this->formatBytes(disk_free_space('.')),
+            'disk_total' => $this->formatBytes(disk_total_space('.')),
+            'uptime' => $this->getSystemUptime(),
+        ];
+    }
+
+    /**
+     * Format bytes to human readable format
+     */
+    private function formatBytes($bytes, $precision = 2)
+    {
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+
+        for ($i = 0; $bytes > 1024 && $i < count($units) - 1; $i++) {
+            $bytes /= 1024;
+        }
+
+        return round($bytes, $precision) . ' ' . $units[$i];
+    }
+
+    /**
+     * Get system uptime (simplified version)
+     */
+    private function getSystemUptime()
+    {
+        if (function_exists('sys_getloadavg') && file_exists('/proc/uptime')) {
+            $uptime = file_get_contents('/proc/uptime');
+            $uptime = explode(' ', $uptime)[0];
+            $days = floor($uptime / 86400);
+            $hours = floor(($uptime % 86400) / 3600);
+            $minutes = floor(($uptime % 3600) / 60);
+            return "{$days}d {$hours}h {$minutes}m";
+        }
+        return 'N/A';
     }
 }

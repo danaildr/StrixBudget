@@ -181,42 +181,66 @@
                                     <tr>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Date') }}</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Type') }}</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Category') }}</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Account') }}</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Counterparty') }}</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Amount') }}</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Counterparty') }}</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Category') }}</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Description') }}</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Details') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
                                     @foreach($transactions as $transaction)
-                                        <tr>
+                                        <tr class="hover:bg-gray-50 cursor-pointer" onclick="window.location='{{ route('transactions.show', $transaction) }}'">
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {{ $transaction->executed_at->format('Y-m-d H:i') }}
+                                                {{ $transaction->executed_at->format('d.m.Y') }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $transaction->type === 'income' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                                    {{ ucfirst($transaction->type) }}
+                                                    {{ $transaction->type === 'income' ? 'I' : 'E' }}
                                                 </span>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {{ $transaction->transactionType->name }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {{ $transaction->bankAccount->name }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {{ $transaction->counterparty->name }}
+                                            <td class="px-6 py-4 text-sm text-gray-500" style="max-width: 150px; word-wrap: break-word;">
+                                                @php
+                                                    $accountName = $transaction->bankAccount->name;
+                                                    if (strlen($accountName) > 40) {
+                                                        echo substr($accountName, 0, 35) . '...';
+                                                    } else {
+                                                        echo $accountName;
+                                                    }
+                                                @endphp
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm {{ $transaction->type === 'income' ? 'text-green-600' : 'text-red-600' }}">
                                                 {{ $transaction->type === 'income' ? '+' : '-' }}{{ number_format($transaction->amount, 2) }} {{ $transaction->currency }}
                                             </td>
-                                            <td class="px-6 py-4 text-sm text-gray-500">
-                                                {{ str($transaction->description)->limit(50) }}
+                                            <td class="px-6 py-4 text-sm text-gray-500" style="max-width: 150px; word-wrap: break-word;">
+                                                @php
+                                                    $counterpartyName = $transaction->counterparty->name;
+                                                    if (strlen($counterpartyName) > 40) {
+                                                        echo substr($counterpartyName, 0, 35) . '...';
+                                                    } else {
+                                                        echo $counterpartyName;
+                                                    }
+                                                @endphp
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                                <a href="{{ route('transactions.show', $transaction) }}" class="text-indigo-600 hover:text-indigo-900">{{ __('View Details') }}</a>
+                                            <td class="px-6 py-4 text-sm text-gray-500" style="max-width: 150px; word-wrap: break-word;">
+                                                @php
+                                                    $categoryName = $transaction->transactionType->name;
+                                                    if (strlen($categoryName) > 40) {
+                                                        echo substr($categoryName, 0, 35) . '...';
+                                                    } else {
+                                                        echo $categoryName;
+                                                    }
+                                                @endphp
+                                            </td>
+                                            <td class="px-6 py-4 text-sm text-gray-500" style="max-width: 200px; word-wrap: break-word;">
+                                                @php
+                                                    $description = $transaction->description;
+                                                    if (strlen($description) > 40) {
+                                                        echo substr($description, 0, 35) . '...';
+                                                    } else {
+                                                        echo $description;
+                                                    }
+                                                @endphp
                                             </td>
                                         </tr>
                                     @endforeach

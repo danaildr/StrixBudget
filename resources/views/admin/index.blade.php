@@ -78,8 +78,35 @@
                 </div>
             </div>
 
+            <!-- Server Status -->
+            <div class="mb-8">
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('Server Status') }}</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-blue-600">{{ $serverStatus['php_version'] }}</div>
+                                <div class="text-sm text-gray-500">{{ __('PHP Version') }}</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-green-600">{{ $serverStatus['app_version'] }}</div>
+                                <div class="text-sm text-gray-500">{{ __('App Version') }}</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-orange-600">{{ $serverStatus['memory_usage'] }}</div>
+                                <div class="text-sm text-gray-500">{{ __('Memory Usage') }}</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-purple-600">{{ $serverStatus['uptime'] }}</div>
+                                <div class="text-sm text-gray-500">{{ __('System Uptime') }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Quick Actions -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <!-- Users Management -->
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
@@ -99,6 +126,38 @@
                         <a href="{{ route('admin.registration-keys') }}" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700">
                             {{ __('Manage Keys') }}
                         </a>
+                    </div>
+                </div>
+
+                <!-- System Settings -->
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('System Settings') }}</h3>
+                        <p class="text-gray-600 mb-4">{{ __('Configure site name, icons and appearance') }}</p>
+                        <a href="{{ route('admin.settings') }}" class="inline-flex items-center px-4 py-2 bg-purple-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-purple-700">
+                            {{ __('Manage Settings') }}
+                        </a>
+                    </div>
+                </div>
+
+                <!-- System Information -->
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('System Info') }}</h3>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">{{ __('Memory Limit:') }}</span>
+                                <span class="font-medium">{{ $serverStatus['memory_limit'] }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">{{ __('Peak Memory:') }}</span>
+                                <span class="font-medium">{{ $serverStatus['memory_peak'] }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">{{ __('Free Disk:') }}</span>
+                                <span class="font-medium">{{ $serverStatus['disk_free'] }}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

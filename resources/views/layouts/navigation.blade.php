@@ -5,8 +5,17 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+                    <a href="{{ route('dashboard') }}" class="flex items-center">
+                        @php
+                            $siteIconUrl = \App\Helpers\SettingsHelper::getSiteIconUrl();
+                            $siteName = \App\Helpers\SettingsHelper::getSiteName();
+                        @endphp
+                        @if($siteIconUrl)
+                            <img src="{{ $siteIconUrl }}" alt="{{ $siteName }}" class="h-9 w-9 object-contain rounded">
+                        @else
+                            <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+                        @endif
+                        <span class="ml-2 text-lg font-semibold text-gray-800">{{ $siteName }}</span>
                     </a>
                 </div>
 

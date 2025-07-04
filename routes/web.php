@@ -47,6 +47,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/registration-keys', [AdminController::class, 'registrationKeys'])->name('registration-keys');
         Route::post('/registration-keys/generate', [AdminController::class, 'generateKey'])->name('registration-keys.generate');
         Route::delete('/registration-keys/{key}', [AdminController::class, 'deleteKey'])->name('registration-keys.delete');
+        Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
+        Route::post('/settings', [AdminController::class, 'updateSettings'])->name('settings.update');
     });
 
     // Power User routes
