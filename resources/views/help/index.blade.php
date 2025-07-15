@@ -16,56 +16,7 @@
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
-            <!-- Navigation -->
-            <nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="flex justify-between h-16">
-                        <div class="flex">
-                            <!-- Logo -->
-                            <div class="shrink-0 flex items-center">
-                                <a href="{{ url('/') }}">
-                                    <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
-                                </a>
-                            </div>
-
-                            <!-- Navigation Links -->
-                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <a href="{{ url('/') }}" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
-                                    {{ __('Home') }}
-                                </a>
-                                <a href="{{ route('help.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 border-indigo-400 text-gray-900 text-sm font-medium leading-5 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
-                                    {{ __('Help') }}
-                                </a>
-                                @if($user)
-                                    <a href="{{ route('dashboard') }}" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
-                                        {{ __('Dashboard') }}
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
-
-                        <!-- Authentication Links -->
-                        <div class="hidden sm:flex sm:items-center sm:ms-6">
-                            @if($user)
-                                <a href="{{ route('dashboard') }}" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                    {{ __('Dashboard') }}
-                                </a>
-                            @else
-                                <div class="space-x-4">
-                                    <a href="{{ route('login') }}" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                        {{ __('Log in') }}
-                                    </a>
-                                    @if (Route::has('register'))
-                                        <a href="{{ route('register') }}" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                            {{ __('Register') }}
-                                        </a>
-                                    @endif
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-            </nav>
+            @include('layouts.navigation')
 
             <!-- Page Heading -->
             <header class="bg-white shadow">
@@ -156,12 +107,24 @@
                     <div class="mb-8">
                         <h3 class="text-xl font-semibold text-gray-900 mb-4">{{ __('Getting Started - Step by Step') }}</h3>
                         
-                        <!-- Стъпка 1: Банкови сметки -->
-                        <div class="mb-6 border-l-4 border-blue-500 pl-4">
-                            <h4 class="text-lg font-semibold text-gray-900 mb-2">{{ __('Step 1: Create Bank Accounts') }}</h4>
-                            <p class="text-gray-700 mb-2">{{ __('Start by creating your bank accounts:') }}</p>
+                        <!-- Стъпка 1: Основни данни -->
+                        <div class="mb-6 border-l-4 border-indigo-500 pl-4">
+                            <h4 class="text-lg font-semibold text-gray-900 mb-2">{{ __('Step 1: Set Up Master Data') }}</h4>
+                            <p class="text-gray-700 mb-2">{{ __('Start by setting up your basic financial data:') }}</p>
                             <ul class="list-disc list-inside text-gray-600 space-y-1 ml-4">
-                                <li>{{ __('Go to "Accounts" in the navigation menu') }}</li>
+                                <li>{{ __('Go to "Master Data" in the navigation menu') }}</li>
+                                <li>{{ __('This page provides access to all your basic data in one place') }}</li>
+                                <li>{{ __('You will see three cards: Counterparties, Categories, and Accounts') }}</li>
+                                <li>{{ __('Each card shows current count and provides quick access to view all or create new items') }}</li>
+                            </ul>
+                        </div>
+
+                        <!-- Стъпка 2: Банкови сметки -->
+                        <div class="mb-6 border-l-4 border-blue-500 pl-4">
+                            <h4 class="text-lg font-semibold text-gray-900 mb-2">{{ __('Step 2: Create Bank Accounts') }}</h4>
+                            <p class="text-gray-700 mb-2">{{ __('Set up your bank accounts:') }}</p>
+                            <ul class="list-disc list-inside text-gray-600 space-y-1 ml-4">
+                                <li>{{ __('From "Master Data" page, click "View All" or "Create New" in the Accounts card') }}</li>
                                 <li>{{ __('Click "New Account" button') }}</li>
                                 <li>{{ __('Enter account name (e.g., "Main Checking Account")') }}</li>
                                 <li>{{ __('Select currency (BGN, EUR, or USD)') }}</li>
@@ -170,37 +133,38 @@
                             </ul>
                         </div>
 
-                        <!-- Стъпка 2: Контрагенти -->
+                        <!-- Стъпка 3: Контрагенти -->
                         <div class="mb-6 border-l-4 border-green-500 pl-4">
-                            <h4 class="text-lg font-semibold text-gray-900 mb-2">{{ __('Step 2: Add Counterparties') }}</h4>
+                            <h4 class="text-lg font-semibold text-gray-900 mb-2">{{ __('Step 3: Add Counterparties') }}</h4>
                             <p class="text-gray-700 mb-2">{{ __('Create records for people and organizations you transact with:') }}</p>
                             <ul class="list-disc list-inside text-gray-600 space-y-1 ml-4">
-                                <li>{{ __('Go to "Counterparties" in the navigation menu') }}</li>
-                                <li>{{ __('Click "New Counterparty" button') }}</li>
+                                <li>{{ __('From "Master Data" page, use the Counterparties card') }}</li>
+                                <li>{{ __('Click "Create New" to add a new counterparty') }}</li>
                                 <li>{{ __('Enter name (e.g., "Grocery Store", "John Doe", "Salary - Company XYZ")') }}</li>
                                 <li>{{ __('Optionally add email, phone, and description') }}</li>
                             </ul>
                         </div>
 
-                        <!-- Стъпка 3: Категории -->
+                        <!-- Стъпка 4: Категории -->
                         <div class="mb-6 border-l-4 border-purple-500 pl-4">
-                            <h4 class="text-lg font-semibold text-gray-900 mb-2">{{ __('Step 3: Create Transaction Categories') }}</h4>
+                            <h4 class="text-lg font-semibold text-gray-900 mb-2">{{ __('Step 4: Create Transaction Categories') }}</h4>
                             <p class="text-gray-700 mb-2">{{ __('Organize your transactions with categories:') }}</p>
                             <ul class="list-disc list-inside text-gray-600 space-y-1 ml-4">
-                                <li>{{ __('Go to "Categories" in the navigation menu') }}</li>
-                                <li>{{ __('Click "New Category" button') }}</li>
+                                <li>{{ __('From "Master Data" page, use the Categories card') }}</li>
+                                <li>{{ __('Click "Create New" to add a new category') }}</li>
                                 <li>{{ __('Enter category name (e.g., "Groceries", "Salary", "Utilities", "Entertainment")') }}</li>
                                 <li>{{ __('Add description if needed') }}</li>
                             </ul>
                         </div>
 
-                        <!-- Стъпка 4: Транзакции -->
+                        <!-- Стъпка 5: Транзакции -->
                         <div class="mb-6 border-l-4 border-red-500 pl-4">
-                            <h4 class="text-lg font-semibold text-gray-900 mb-2">{{ __('Step 4: Record Transactions') }}</h4>
+                            <h4 class="text-lg font-semibold text-gray-900 mb-2">{{ __('Step 5: Record Transactions') }}</h4>
                             <p class="text-gray-700 mb-2">{{ __('Start tracking your income and expenses:') }}</p>
                             <ul class="list-disc list-inside text-gray-600 space-y-1 ml-4">
-                                <li>{{ __('Use the "NEW" dropdown button in the top navigation') }}</li>
-                                <li>{{ __('Select "New Transaction"') }}</li>
+                                <li>{{ __('Click on "Movements" dropdown in the navigation menu') }}</li>
+                                <li>{{ __('Select "Transactions" to view all transactions') }}</li>
+                                <li>{{ __('Click "New Transaction" button') }}</li>
                                 <li>{{ __('Choose transaction type: Income or Expense') }}</li>
                                 <li>{{ __('Select bank account, counterparty, and category') }}</li>
                                 <li>{{ __('Enter amount and description') }}</li>
@@ -208,12 +172,14 @@
                             </ul>
                         </div>
 
-                        <!-- Стъпка 5: Трансфери -->
+                        <!-- Стъпка 6: Трансфери -->
                         <div class="mb-6 border-l-4 border-yellow-500 pl-4">
-                            <h4 class="text-lg font-semibold text-gray-900 mb-2">{{ __('Step 5: Transfer Money Between Accounts') }}</h4>
+                            <h4 class="text-lg font-semibold text-gray-900 mb-2">{{ __('Step 6: Transfer Money Between Accounts') }}</h4>
                             <p class="text-gray-700 mb-2">{{ __('Move money between your accounts:') }}</p>
                             <ul class="list-disc list-inside text-gray-600 space-y-1 ml-4">
-                                <li>{{ __('Use the "NEW" dropdown button and select "New Transfer"') }}</li>
+                                <li>{{ __('Click on "Movements" dropdown in the navigation menu') }}</li>
+                                <li>{{ __('Select "Transfers" to view all transfers') }}</li>
+                                <li>{{ __('Click "New Transfer" button') }}</li>
                                 <li>{{ __('Select source account (money will be deducted from here)') }}</li>
                                 <li>{{ __('Select destination account (money will be added here)') }}</li>
                                 <li>{{ __('Enter amount in source currency') }}</li>
@@ -260,17 +226,26 @@
                                 <h4 class="font-semibold text-gray-900 mb-2">{{ __('Main Menu Items') }}</h4>
                                 <ul class="text-sm text-gray-600 space-y-1">
                                     <li><strong>{{ __('Dashboard') }}:</strong> {{ __('Overview of all accounts and balances') }}</li>
-                                    <li><strong>{{ __('Transactions') }}:</strong> {{ __('View and manage all income/expense records') }}</li>
-                                    <li><strong>{{ __('Transfers') }}:</strong> {{ __('View and manage money transfers between accounts') }}</li>
-                                    <li><strong>{{ __('Counterparties') }}:</strong> {{ __('Manage people and organizations') }}</li>
-                                    <li><strong>{{ __('Categories') }}:</strong> {{ __('Manage transaction categories') }}</li>
-                                    <li><strong>{{ __('Accounts') }}:</strong> {{ __('Manage your bank accounts') }}</li>
+                                    <li><strong>{{ __('Movements') }}:</strong> {{ __('Dropdown menu containing:') }}
+                                        <ul class="ml-4 mt-1 space-y-1">
+                                            <li>• <strong>{{ __('Transactions') }}:</strong> {{ __('View and manage all income/expense records') }}</li>
+                                            <li>• <strong>{{ __('Transfers') }}:</strong> {{ __('View and manage money transfers between accounts') }}</li>
+                                        </ul>
+                                    </li>
+                                    <li><strong>{{ __('Master Data') }}:</strong> {{ __('Central hub for managing:') }}
+                                        <ul class="ml-4 mt-1 space-y-1">
+                                            <li>• <strong>{{ __('Counterparties') }}:</strong> {{ __('Manage people and organizations') }}</li>
+                                            <li>• <strong>{{ __('Categories') }}:</strong> {{ __('Manage transaction categories') }}</li>
+                                            <li>• <strong>{{ __('Accounts') }}:</strong> {{ __('Manage your bank accounts') }}</li>
+                                        </ul>
+                                    </li>
                                 </ul>
                             </div>
                             <div>
                                 <h4 class="font-semibold text-gray-900 mb-2">{{ __('Quick Actions') }}</h4>
                                 <ul class="text-sm text-gray-600 space-y-1">
-                                    <li><strong>{{ __('NEW Button') }}:</strong> {{ __('Quick access to create transactions and transfers') }}</li>
+                                    <li><strong>{{ __('Master Data Cards') }}:</strong> {{ __('Quick access to view all or create new items from the Master Data page') }}</li>
+                                    <li><strong>{{ __('Dashboard Buttons') }}:</strong> {{ __('Quick access to create new transactions and transfers from the dashboard') }}</li>
                                     <li><strong>{{ __('Search') }}:</strong> {{ __('Available on most listing pages') }}</li>
                                     <li><strong>{{ __('Export') }}:</strong> {{ __('Download data in various formats (CSV, Excel, PDF)') }}</li>
                                     <li><strong>{{ __('Import') }}:</strong> {{ __('Bulk import data from files') }}</li>

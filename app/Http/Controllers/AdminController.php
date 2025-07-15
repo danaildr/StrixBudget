@@ -178,7 +178,7 @@ class AdminController extends Controller
     {
         return [
             'php_version' => PHP_VERSION,
-            'app_version' => '0.1-beta-20250704',
+            'app_version' => '0.2-beta-20250715',
             'memory_usage' => $this->formatBytes(memory_get_usage(true)),
             'memory_peak' => $this->formatBytes(memory_get_peak_usage(true)),
             'memory_limit' => ini_get('memory_limit'),

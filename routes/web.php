@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\CounterpartyController;
+use App\Http\Controllers\MasterDataController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\TransactionController;
@@ -36,6 +37,9 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('transfers', TransferController::class);
     Route::resource('transactions', TransactionController::class);
     Route::resource('transaction-types', TransactionTypeController::class);
+
+    // Master Data route
+    Route::get('/master-data', [MasterDataController::class, 'index'])->name('master-data.index');
 
 
 
