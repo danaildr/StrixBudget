@@ -36,6 +36,43 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+            @if((isset($upcomingRecurring) && $upcomingRecurring->count()) || (isset($upcomingScheduled) && $upcomingScheduled->count()))
+                <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-900 p-4 mb-6 rounded shadow">
+                    <div class="flex items-center mb-2">
+                        <svg class="h-6 w-6 text-yellow-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
+                        </svg>
+                        <span class="font-bold">Предстоящи плащания в следващите 7 дни:</span>
+                    </div>
+                    <ul class="list-disc pl-6">
+                        @foreach($upcomingRecurring ?? [] as $payment)
+                            <li>
+                                <span class="font-semibold">Повтарящо се:</span>
+                                {{ $payment->description ?? 'Без описание' }} — {{ number_format($payment->amount, 2) }} {{ $payment->currency }}
+                                @if($payment->bankAccount) ({{ $payment->bankAccount->name }}) @endif
+                            </li>
+                        @endforeach
+                        @foreach($upcomingScheduled ?? [] as $payment)
+                            <li>
+                                <span class="font-semibold">Планирано:</span>
+                                {{ $payment->description ?? 'Без описание' }} — {{ number_format($payment->amount, 2) }} {{ $payment->currency }} на {{ $payment->scheduled_date }}
+                                @if($payment->bankAccount) ({{ $payment->bankAccount->name }}) @endif
+                            </li>
+                        @endforeach
+                    </ul>
+                    @if(isset($upcomingScheduled) && $upcomingScheduled->count())
+                        <div class="mt-4 text-right">
+                            <a href="{{ route('scheduled-payments.index') }}" class="inline-flex items-center px-4 py-2 bg-pink-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-pink-700">
+                                <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                Виж всички планирани
+                            </a>
+                        </div>
+                    @endif
+                </div>
+            @endif
             @if(Auth::user()->bankAccounts->isEmpty())
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-center">

@@ -237,6 +237,69 @@ http://localhost:8000/api
 #### GET /transaction-types/{id}/transactions
 Получаване на транзакции за тип транзакция.
 
+### 🕒 Повтарящи се плащания (Recurring Payments)
+
+| Метод | Endpoint | Описание |
+|-------|----------|----------|
+| GET | `/api/recurring-payments` | Списък с повтарящи се плащания |
+| POST | `/api/recurring-payments` | Създаване на повтарящо се плащане |
+| GET | `/api/recurring-payments/{id}` | Детайли за повтарящо се плащане |
+| PUT | `/api/recurring-payments/{id}` | Обновяване на повтарящо се плащане |
+| PATCH | `/api/recurring-payments/{id}` | Частично обновяване |
+| DELETE | `/api/recurring-payments/{id}` | Изтриване |
+
+**Пример за създаване:**
+```json
+{
+  "bank_account_id": 1,
+  "counterparty_id": 1,
+  "transaction_type_id": 1,
+  "amount": 100.00,
+  "currency": "BGN",
+  "description": "Месечен наем",
+  "repeat_type": "monthly",
+  "repeat_interval": 1,
+  "repeat_unit": "months",
+  "period_start_day": 1,
+  "period_end_day": 10,
+  "start_date": "2025-07-01",
+  "end_date": null,
+  "is_active": true
+}
+```
+
+### 📅 Планирани плащания (Scheduled Payments)
+
+| Метод | Endpoint | Описание |
+|-------|----------|----------|
+| GET | `/api/scheduled-payments` | Списък с планирани плащания |
+| POST | `/api/scheduled-payments` | Създаване на планирано плащане |
+| GET | `/api/scheduled-payments/{id}` | Детайли за планирано плащане |
+| PUT | `/api/scheduled-payments/{id}` | Обновяване на планирано плащане |
+| PATCH | `/api/scheduled-payments/{id}` | Частично обновяване |
+| DELETE | `/api/scheduled-payments/{id}` | Изтриване |
+
+**Пример за създаване:**
+```json
+{
+  "bank_account_id": 1,
+  "counterparty_id": 1,
+  "transaction_type_id": 1,
+  "amount": 50.00,
+  "currency": "BGN",
+  "description": "Плащане на ток",
+  "scheduled_date": "2025-07-10",
+  "period_start_date": "2025-07-01",
+  "period_end_date": "2025-07-15",
+  "is_active": true
+}
+```
+
+**Query параметри за списъците:**
+- `is_active` — филтрира по статус (true/false)
+- `per_page` — брой на страница
+- `page` — номер на страница
+
 ## Формат на отговорите
 
 Всички отговори са в JSON формат със следната структура:
@@ -386,6 +449,69 @@ curl -X POST http://localhost:8000/api/transactions \
 | DELETE | `/api/transaction-types/{id}` | Изтриване на тип |
 | GET | `/api/transaction-types/{id}/statistics` | Статистики за тип |
 | GET | `/api/transaction-types/{id}/transactions` | Транзакции за тип |
+
+### 🕒 Повтарящи се плащания (Recurring Payments)
+
+| Метод | Endpoint | Описание |
+|-------|----------|----------|
+| GET | `/api/recurring-payments` | Списък с повтарящи се плащания |
+| POST | `/api/recurring-payments` | Създаване на повтарящо се плащане |
+| GET | `/api/recurring-payments/{id}` | Детайли за повтарящо се плащане |
+| PUT | `/api/recurring-payments/{id}` | Обновяване на повтарящо се плащане |
+| PATCH | `/api/recurring-payments/{id}` | Частично обновяване |
+| DELETE | `/api/recurring-payments/{id}` | Изтриване |
+
+**Пример за създаване:**
+```json
+{
+  "bank_account_id": 1,
+  "counterparty_id": 1,
+  "transaction_type_id": 1,
+  "amount": 100.00,
+  "currency": "BGN",
+  "description": "Месечен наем",
+  "repeat_type": "monthly",
+  "repeat_interval": 1,
+  "repeat_unit": "months",
+  "period_start_day": 1,
+  "period_end_day": 10,
+  "start_date": "2025-07-01",
+  "end_date": null,
+  "is_active": true
+}
+```
+
+### 📅 Планирани плащания (Scheduled Payments)
+
+| Метод | Endpoint | Описание |
+|-------|----------|----------|
+| GET | `/api/scheduled-payments` | Списък с планирани плащания |
+| POST | `/api/scheduled-payments` | Създаване на планирано плащане |
+| GET | `/api/scheduled-payments/{id}` | Детайли за планирано плащане |
+| PUT | `/api/scheduled-payments/{id}` | Обновяване на планирано плащане |
+| PATCH | `/api/scheduled-payments/{id}` | Частично обновяване |
+| DELETE | `/api/scheduled-payments/{id}` | Изтриване |
+
+**Пример за създаване:**
+```json
+{
+  "bank_account_id": 1,
+  "counterparty_id": 1,
+  "transaction_type_id": 1,
+  "amount": 50.00,
+  "currency": "BGN",
+  "description": "Плащане на ток",
+  "scheduled_date": "2025-07-10",
+  "period_start_date": "2025-07-01",
+  "period_end_date": "2025-07-15",
+  "is_active": true
+}
+```
+
+**Query параметри за списъците:**
+- `is_active` — филтрира по статус (true/false)
+- `per_page` — брой на страница
+- `page` — номер на страница
 
 ## Query параметри за филтриране
 

@@ -37,6 +37,11 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('transfers', TransferController::class);
     Route::resource('transactions', TransactionController::class);
     Route::resource('transaction-types', TransactionTypeController::class);
+    Route::resource('recurring-payments', App\Http\Controllers\RecurringPaymentController::class);
+    Route::get('recurring-payments/{recurring_payment}/make-transaction', [App\Http\Controllers\RecurringPaymentController::class, 'makeTransaction'])->name('recurring-payments.make-transaction');
+
+    Route::resource('scheduled-payments', App\Http\Controllers\ScheduledPaymentController::class);
+    Route::get('scheduled-payments/{scheduled_payment}/make-transaction', [App\Http\Controllers\ScheduledPaymentController::class, 'makeTransaction'])->name('scheduled-payments.make-transaction');
 
     // Master Data route
     Route::get('/master-data', [MasterDataController::class, 'index'])->name('master-data.index');

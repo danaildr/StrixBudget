@@ -97,6 +97,11 @@ class User extends Authenticatable
         return $this->hasMany(TransactionType::class);
     }
 
+    public function scheduledPayments()
+    {
+        return $this->hasMany(\App\Models\ScheduledPayment::class);
+    }
+
     /**
      * Check if user is admin
      */

@@ -86,4 +86,9 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
     Route::apiResource('transaction-types', TransactionTypeApiController::class);
     Route::get('transaction-types/{transactionType}/statistics', [TransactionTypeApiController::class, 'statistics'])->name('transaction-types.statistics');
     Route::get('transaction-types/{transactionType}/transactions', [TransactionTypeApiController::class, 'transactions'])->name('transaction-types.transactions');
+
+    // Recurring Payments
+    Route::apiResource('recurring-payments', \App\Http\Controllers\Api\RecurringPaymentApiController::class);
+    // Scheduled Payments
+    Route::apiResource('scheduled-payments', \App\Http\Controllers\Api\ScheduledPaymentApiController::class);
 });

@@ -29,8 +29,8 @@
                             <x-input-label for="type" :value="__('Transaction Type')" />
                             <select id="type" name="type" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
                                 <option value="">Select Type</option>
-                                <option value="income" {{ old('type') == 'income' ? 'selected' : '' }}>Income</option>
-                                <option value="expense" {{ old('type') == 'expense' ? 'selected' : '' }}>Expense</option>
+                                <option value="income" {{ old('type', $defaults['type'] ?? null) == 'income' ? 'selected' : '' }}>Income</option>
+                                <option value="expense" {{ old('type', $defaults['type'] ?? null) == 'expense' ? 'selected' : '' }}>Expense</option>
                             </select>
                             <x-input-error class="mt-2" :messages="$errors->get('type')" />
                         </div>
@@ -43,7 +43,7 @@
                                     <option value="{{ $account->id }}" 
                                         data-currency="{{ $account->currency }}" 
                                         data-balance="{{ $account->balance }}"
-                                        {{ old('bank_account_id') == $account->id ? 'selected' : '' }}>
+                                        {{ old('bank_account_id', $defaults['bank_account_id'] ?? null) == $account->id ? 'selected' : '' }}>
                                         {{ $account->name }} ({{ $account->currency }})
                                     </option>
                                 @endforeach
@@ -54,7 +54,7 @@
                         <div>
                             <x-input-label for="amount" :value="__('Amount')" />
                             <div class="mt-1 flex rounded-md shadow-sm">
-                                <x-text-input id="amount" name="amount" type="text" pattern="[0-9]+([.,][0-9]{1,2})?" inputmode="decimal" class="block w-full rounded-none rounded-l-md" :value="old('amount')" required placeholder="0.00" />
+                                <x-text-input id="amount" name="amount" type="text" pattern="[0-9]+([.,][0-9]{1,2})?" inputmode="decimal" class="block w-full rounded-none rounded-l-md" :value="old('amount', $defaults['amount'] ?? null)" required placeholder="0.00" />
                                 <span id="currency" class="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
                                     ---
                                 </span>
@@ -68,7 +68,7 @@
                                 <select id="counterparty_id" name="counterparty_id" class="search-select mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
                                     <option value="">Select Counterparty</option>
                                     @foreach($counterparties as $counterparty)
-                                        <option value="{{ $counterparty->id }}" {{ old('counterparty_id') == $counterparty->id ? 'selected' : '' }}>
+                                        <option value="{{ $counterparty->id }}" {{ old('counterparty_id', $defaults['counterparty_id'] ?? null) == $counterparty->id ? 'selected' : '' }}>
                                             {{ $counterparty->name }}
                                         </option>
                                     @endforeach
@@ -83,7 +83,7 @@
                                 <select id="transaction_type_id" name="transaction_type_id" class="search-select mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
                                     <option value="">Select Category</option>
                                     @foreach($transactionTypes as $type)
-                                        <option value="{{ $type->id }}" {{ old('transaction_type_id') == $type->id ? 'selected' : '' }}>
+                                        <option value="{{ $type->id }}" {{ old('transaction_type_id', $defaults['transaction_type_id'] ?? null) == $type->id ? 'selected' : '' }}>
                                             {{ $type->name }}
                                         </option>
                                     @endforeach
@@ -94,7 +94,7 @@
 
                         <div>
                             <x-input-label for="description" :value="__('Description')" />
-                            <textarea id="description" name="description" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" rows="3">{{ old('description') }}</textarea>
+                            <textarea id="description" name="description" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" rows="3">{{ old('description', $defaults['description'] ?? null) }}</textarea>
                             <x-input-error class="mt-2" :messages="$errors->get('description')" />
                         </div>
 

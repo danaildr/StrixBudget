@@ -78,15 +78,26 @@ class TransactionController extends Controller
     }
 
     /** @return \Illuminate\View\View */
-    public function create()
+    public function create(Request $request)
     {
         /** @var User $user */
         $user = Auth::user();
         $accounts = $user->bankAccounts()->where('is_active', true)->get();
         $counterparties = $user->counterparties;
         $transactionTypes = $user->transactionTypes;
-        
-        return view('transactions.create', compact('accounts', 'counterparties', 'transactionTypes'));
+
+        // Вземаме стойности от заявката, ако има
+        $defaults = [
+            'bank_account_id' => $request->input('bank_account_id'),
+            'counterparty_id' => $request->input('counterparty_id'),
+            'transaction_type_id' => $request->input('transaction_type_id'),
+            'amount' => $request->input('amount'),
+            'currency' => $request->input('currency'),
+            'description' => $request->input('description'),
+            'type' => $request->input('type'),
+        ];
+
+        return view('transactions.create', compact('accounts', 'counterparties', 'transactionTypes', 'defaults'));
     }
 
     /** @return \Illuminate\Http\RedirectResponse */
