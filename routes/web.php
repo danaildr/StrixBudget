@@ -58,6 +58,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/registration-keys/{key}', [AdminController::class, 'deleteKey'])->name('registration-keys.delete');
         Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
         Route::post('/settings', [AdminController::class, 'updateSettings'])->name('settings.update');
+        Route::post('/settings/test-smtp', [AdminController::class, 'testSmtp'])->name('settings.test-smtp');
     });
 
     // Power User routes
@@ -85,6 +86,14 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/import/bank-accounts', [ImportController::class, 'importBankAccounts'])->name('import.bank-accounts');
     Route::post('/import/transactions', [ImportController::class, 'importTransactions'])->name('import.transactions');
     Route::post('/import/transfers', [ImportController::class, 'importTransfers'])->name('import.transfers');
+    
+    // Маршрути за известия
+    Route::prefix('notifications')->name('notifications.')->group(function () {
+        Route::get('/', [App\Http\Controllers\NotificationController::class, 'index'])->name('index');
+        Route::post('/{id}/read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('markAsRead');
+        Route::post('/mark-all-read', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('markAllAsRead');
+        Route::get('/unread-count', [App\Http\Controllers\NotificationController::class, 'unreadCount'])->name('unreadCount');
+    });
 });
 
 require __DIR__.'/auth.php';

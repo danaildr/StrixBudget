@@ -118,6 +118,11 @@ class BankAccountController extends Controller
             'is_default' => ['boolean']
         ]);
 
+        // Добавяне на is_active стойност, ако липсва (когато checkbox не е отметнат)
+        if (!isset($validated['is_active'])) {
+            $validated['is_active'] = false;
+        }
+
         DB::transaction(function () use ($validated, $request, $bankAccount) {
             // If this account is set as default, remove default from other accounts
             if ($request->boolean('is_default') && !$bankAccount->is_default) {

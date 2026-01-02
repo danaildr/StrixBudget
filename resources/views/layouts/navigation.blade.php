@@ -62,6 +62,190 @@
 
             <!-- Help Button и Settings Dropdown в един контейнер -->
             <div class="hidden sm:flex sm:items-center space-x-4">
+                <!-- Notification Bell -->
+                <div class="relative" x-data="{ 
+                    open: false, 
+                    notifications: [], 
+                    unreadCount: 0, 
+                    loading: true,
+                    async fetchNotifications() {
+                        try {
+                            console.log('Fetching notifications...');
+                            const response = await fetch('{{ route('notifications.index') }}', {
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'Accept': 'application/json'
+                                }
+                            });
+                            console.log('Response status:', response.status);
+                            console.log('Response headers:', response.headers);
+                            
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            
+                            const data = await response.json();
+                            console.log('Received data:', data);
+                            this.notifications = data;
+                            this.unreadCount = this.notifications.filter(n => !n.read_at).length;
+                            console.log('Unread count:', this.unreadCount);
+                        } catch (error) {
+                            console.error('Error fetching notifications:', error);
+                        } finally {
+                            this.loading = false;
+                        }
+                    },
+                    async markNotificationAsRead(notificationId) {
+                        try {
+                            const response = await fetch(`{{ route('notifications.markAsRead', ':id') }}`.replace(':id', notificationId), {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                }
+                            });
+                            
+                            if (response.ok) {
+                                // Update notification in the array
+                                const notification = this.notifications.find(n => n.id === notificationId);
+                                if (notification) {
+                                    notification.read_at = new Date().toISOString();
+                                }
+                                this.unreadCount = this.notifications.filter(n => !n.read_at).length;
+                            }
+                        } catch (error) {
+                            console.error('Error marking notification as read:', error);
+                        }
+                    },
+                    async markAllNotificationsAsRead() {
+                        try {
+                            const response = await fetch('{{ route('notifications.markAllAsRead') }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                }
+                            });
+                            
+                            if (response.ok) {
+                                // Mark all notifications as read
+                                this.notifications.forEach(n => {
+                                    n.read_at = new Date().toISOString();
+                                });
+                                this.unreadCount = 0;
+                            }
+                        } catch (error) {
+                            console.error('Error marking all notifications as read:', error);
+                        }
+                    },
+                    formatDate(dateString) {
+                        const date = new Date(dateString);
+                        const now = new Date();
+                        const diff = now - date;
+                        const minutes = Math.floor(diff / 60000);
+                        const hours = Math.floor(diff / 3600000);
+                        const days = Math.floor(diff / 86400000);
+                        
+                        if (minutes < 1) {
+                            return 'Just now';
+                        } else if (minutes < 60) {
+                            return `${minutes} minutes ago`;
+                        } else if (hours < 24) {
+                            return `${hours} hours ago`;
+                        } else if (days < 7) {
+                            return `${days} days ago`;
+                        } else {
+                            return date.toLocaleDateString();
+                        }
+                    }
+                }" 
+                     x-init="fetchNotifications()">
+                    <button @click="open = !open; if(open) fetchNotifications()" 
+                            class="relative p-2 text-gray-500 hover:text-gray-700 focus:outline-none rounded-lg hover:bg-gray-100"
+                            title="Notifications">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        <span x-show="unreadCount > 0" 
+                              class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full"
+                              x-text="unreadCount">
+                        </span>
+                    </button>
+
+                    <!-- Notification Dropdown Panel -->
+                    <div x-show="open" 
+                         @click.away="open = false"
+                         class="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg overflow-hidden z-50"
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 transform scale-95"
+                         x-transition:enter-end="opacity-100 transform scale-100"
+                         x-transition:leave="transition ease-in duration-75"
+                         x-transition:leave-start="opacity-100 transform scale-100"
+                         x-transition:leave-end="opacity-0 transform scale-95">
+                        <div class="py-1 bg-white">
+                            <div class="px-4 py-2 border-b border-gray-200">
+                                <div class="flex justify-between items-center">
+                                    <h3 class="text-lg font-medium text-gray-900">Notifications</h3>
+                                    <button @click="markAllNotificationsAsRead" 
+                                            class="text-sm text-blue-600 hover:text-blue-800" 
+                                            :class="{ 'opacity-50 cursor-not-allowed': unreadCount === 0 }"
+                                            :disabled="unreadCount === 0">
+                                        Mark all as read
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="max-h-96 overflow-y-auto">
+                                <template x-if="loading">
+                                    <div class="px-4 py-8 text-center text-gray-500">
+                                        <svg class="animate-spin h-8 w-8 mx-auto text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        <p class="mt-2">Loading notifications...</p>
+                                    </div>
+                                </template>
+                                
+                                <template x-if="!loading && notifications.length === 0">
+                                    <div class="px-4 py-8 text-center text-gray-500">
+                                        <p>No notifications</p>
+                                    </div>
+                                </template>
+                                
+                                <template x-for="notification in notifications" :key="notification.id">
+                                    <a :href="notification.data.url || '#'" 
+                                       @click.prevent="if(notification.data.url) { window.location.href = notification.data.url; markNotificationAsRead(notification.id); }"
+                                       class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 border-b border-gray-100"
+                                       :class="{ 'bg-blue-50': !notification.read_at }">
+                                        <div class="flex items-start">
+                                            <div class="flex-shrink-0 pt-0.5">
+                                                <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-blue-100 text-blue-600">
+                                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                </span>
+                                            </div>
+                                            <div class="ml-3 flex-1">
+                                                <p class="text-sm font-medium text-gray-900" x-text="notification.data.title"></p>
+                                                <p class="text-sm text-gray-500" x-text="notification.data.message"></p>
+                                                <p class="text-xs text-gray-400 mt-1" x-text="formatDate(notification.created_at)"></p>
+                                            </div>
+                                            <button @click.stop="markNotificationAsRead(notification.id)" 
+                                                    class="ml-2 p-1 text-gray-400 hover:text-gray-500"
+                                                    title="Mark as read">
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </a>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <a href="{{ route('help.index') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 inline-flex items-center" title="{{ __('Help & User Guide') }}">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />

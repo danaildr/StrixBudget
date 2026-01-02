@@ -73,14 +73,19 @@
                     @endif
                 </div>
             @endif
-            @if(Auth::user()->bankAccounts->isEmpty())
+            @if($accounts->isEmpty())
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-center">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('No Bank Accounts') }}</h3>
-                        <p class="text-gray-600 mb-4">{{ __('You have not added any bank accounts yet. Add your first account to start tracking your finances.') }}</p>
-                        <a href="{{ route('bank-accounts.create') }}" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                            {{ __('Add Bank Account') }}
-                        </a>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('No Active Bank Accounts') }}</h3>
+                        <p class="text-gray-600 mb-4">{{ __('You have no active bank accounts. Activate an existing account or add a new one to start tracking your finances.') }}</p>
+                        <div class="flex justify-center space-x-4">
+                            <a href="{{ route('bank-accounts.index') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                {{ __('Manage Accounts') }}
+                            </a>
+                            <a href="{{ route('bank-accounts.create') }}" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                {{ __('Add Bank Account') }}
+                            </a>
+                        </div>
                     </div>
                 </div>
             @else
@@ -119,7 +124,7 @@
 
                         <!-- Individual Accounts -->
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            @foreach(Auth::user()->bankAccounts as $account)
+                            @foreach($accounts as $account)
                                 <div class="bg-gray-50 p-4 rounded-lg">
                                     <div class="flex justify-between items-start">
                                         <div>

@@ -22,7 +22,7 @@ class DashboardController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $accounts = $user->bankAccounts;
+        $accounts = $user->bankAccounts()->where('is_active', true)->get();
 
         // Подготвяме данните за графиката
         $chartData = [
@@ -94,6 +94,7 @@ class DashboardController extends Controller
             });
 
         return view('dashboard', [
+            'accounts' => $accounts,
             'chartData' => $chartData,
             'balanceByCurrency' => $accounts->groupBy('currency')
                 ->map(function ($accounts) {

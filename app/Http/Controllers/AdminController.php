@@ -8,6 +8,8 @@ use App\Models\SystemSetting;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Config;
 
 class AdminController extends Controller
 {
@@ -149,9 +151,18 @@ class AdminController extends Controller
             'site_name' => ['required', 'string', 'max:255'],
             'site_icon' => ['nullable', 'image', 'max:2048'],
             'favicon' => ['nullable', 'image', 'max:1024'],
+            // SMTP validation
+            'smtp_host' => ['nullable', 'string', 'max:255'],
+            'smtp_port' => ['nullable', 'integer', 'min:1', 'max:65535'],
+            'smtp_username' => ['nullable', 'string', 'max:255'],
+            'smtp_password' => ['nullable', 'string', 'max:255'],
+            'smtp_encryption' => ['nullable', 'in:tls,ssl'],
+            'smtp_from_address' => ['nullable', 'email', 'max:255'],
+            'smtp_from_name' => ['nullable', 'string', 'max:255'],
+            'smtp_enabled' => ['boolean'],
         ]);
 
-        // Update site name
+        // Update general settings
         SystemSetting::set('site_name', $request->site_name);
 
         // Handle file uploads
@@ -165,10 +176,95 @@ class AdminController extends Controller
             SystemSetting::set('favicon', $path);
         }
 
+        // Update SMTP settings
+        SystemSetting::set('smtp_host', $request->smtp_host);
+        SystemSetting::set('smtp_port', $request->smtp_port);
+        SystemSetting::set('smtp_username', $request->smtp_username);
+        SystemSetting::set('smtp_encryption', $request->smtp_encryption);
+        SystemSetting::set('smtp_from_address', $request->smtp_from_address);
+        SystemSetting::set('smtp_from_name', $request->smtp_from_name);
+        SystemSetting::set('smtp_enabled', $request->boolean('smtp_enabled'));
+        
+        // Only update password if provided
+        if ($request->filled('smtp_password')) {
+            SystemSetting::set('smtp_password', $request->smtp_password);
+        }
+
         // Clear settings cache
         SettingsHelper::clearCache();
 
         return back()->with('success', 'System settings updated successfully.');
+    }
+
+    /**
+     * Test SMTP connection
+     */
+    public function testSmtp(Request $request)
+    {
+        try {
+            // Validate required fields
+            $data = $request->all();
+            
+            if (empty($data['smtp_host']) || empty($data['smtp_port']) || empty($data['smtp_username'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Missing required SMTP configuration: host, port, or username'
+                ]);
+            }
+            
+            // Temporarily configure mail settings
+            $config = [
+                'transport' => 'smtp',
+                'host' => $data['smtp_host'],
+                'port' => $data['smtp_port'],
+                'encryption' => $data['smtp_encryption'] ?? null,
+                'username' => $data['smtp_username'],
+                'password' => $data['smtp_password'] ?? '',
+                'from' => [
+                    'address' => $data['smtp_from_address'] ?? $data['smtp_username'],
+                    'name' => $data['smtp_from_name'] ?? 'StrixBudget',
+                ],
+            ];
+
+            try {
+                // Create SMTP transport
+                $transport = new \Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport(
+                    $config['host'],
+                    $config['port']
+                );
+                $transport->setUsername($config['username']);
+                $transport->setPassword($config['password']);
+
+                $mailer = new \Symfony\Component\Mailer\Mailer($transport);
+                
+                // Create email
+                $email = (new \Symfony\Component\Mime\Email())
+                    ->from($config['from']['address'])
+                    ->to(Auth::user()->email)
+                    ->subject('SMTP Test - StrixBudget')
+                    ->text('This is a test email to verify SMTP configuration is working correctly. If you receive this email, your SMTP settings are correct.');
+                
+                // Send the email
+                $mailer->send($email);
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Test email sent successfully to ' . Auth::user()->email
+                ]);
+                
+            } catch (\Symfony\Component\Mailer\Exception\TransportException $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'SMTP connection failed: ' . $e->getMessage()
+                ]);
+            }
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ]);
+        }
     }
 
     /**
