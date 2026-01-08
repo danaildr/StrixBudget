@@ -50,7 +50,8 @@ trait NormalizesDecimals
             'currency' => ['required', 'string', 'size:3', "in:{$supportedCurrencies}"],
             'is_active' => ['boolean'],
             'is_default' => ['boolean'],
-            'initial_balance' => ['required', 'numeric', 'min:0', "max:{$maxAmount}"]
+            'initial_balance' => ['required', 'numeric', 'min:0', "max:{$maxAmount}"],
+            'iban' => ['nullable', 'string', 'max:34', 'regex:/^[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}$/']
         ];
     }
 

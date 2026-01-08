@@ -20,6 +20,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application Version
+    |--------------------------------------------------------------------------
+    |
+    | This value represents the current version of your application.
+    | It's used in admin panel and other places where version info is needed.
+    |
+    */
+
+    'version' => '0.4-beta-20260108',
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Configuration Constants
     |--------------------------------------------------------------------------
     */

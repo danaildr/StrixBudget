@@ -31,6 +31,13 @@
                         </div>
 
                         <div>
+                            <x-input-label for="iban" :value="__('IBAN')" />
+                            <x-text-input id="iban" name="iban" type="text" class="mt-1 block w-full" :value="old('iban')" placeholder="BG80 BNBG 9661 1020 3456 78" />
+                            <x-input-error class="mt-2" :messages="$errors->get('iban')" />
+                            <p class="mt-1 text-sm text-gray-500">{{ __('Optional: International Bank Account Number') }}</p>
+                        </div>
+
+                        <div>
                             <x-input-label for="initial_balance" :value="__('Initial Balance')" />
                             <div class="mt-1 flex rounded-md shadow-sm">
                                 <x-text-input
@@ -97,6 +104,29 @@
                     }
                 }
             });
+
+            // IBAN validation
+            const ibanInput = document.getElementById('iban');
+            if (ibanInput) {
+                ibanInput.addEventListener('input', function() {
+                    let value = this.value.toUpperCase().replace(/\s/g, '');
+                    this.value = value;
+                });
+
+                ibanInput.addEventListener('blur', function() {
+                    if (this.value && !validateIBAN(this.value)) {
+                        this.setCustomValidity('{{ __("Invalid IBAN format") }}');
+                    } else {
+                        this.setCustomValidity('');
+                    }
+                });
+            }
+
+            function validateIBAN(iban) {
+                // Basic IBAN validation regex
+                const ibanRegex = /^[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}$/;
+                return ibanRegex.test(iban);
+            }
         });
     </script>
     @endpush

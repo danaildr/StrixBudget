@@ -47,7 +47,7 @@
                                 <option value="">Select Account</option>
                                 @foreach($accounts as $account)
                                     <option value="{{ $account->id }}" data-currency="{{ $account->currency }}" {{ old('from_account_id') == $account->id ? 'selected' : '' }}>
-                                        {{ $account->name }} ({{ $account->currency }})
+                                        {{ $account->name }} ({{ $account->currency }}){{ $account->iban ? ' - ' . $account->iban : '' }}
                                     </option>
                                 @endforeach
                             </select>
@@ -60,7 +60,7 @@
                                 <option value="">Select Account</option>
                                 @foreach($accounts as $account)
                                     <option value="{{ $account->id }}" data-currency="{{ $account->currency }}" {{ old('to_account_id') == $account->id ? 'selected' : '' }}>
-                                        {{ $account->name }} ({{ $account->currency }})
+                                        {{ $account->name }} ({{ $account->currency }}){{ $account->iban ? ' - ' . $account->iban : '' }}
                                     </option>
                                 @endforeach
                             </select>

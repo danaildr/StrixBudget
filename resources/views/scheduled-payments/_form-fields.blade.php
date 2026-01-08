@@ -3,7 +3,7 @@
     <select name="bank_account_id" id="bank_account_id" class="form-select w-full" required>
         <option value="">{{ __('Choose...') }}</option>
         @foreach($accounts as $account)
-            <option value="{{ $account->id }}" @selected(old('bank_account_id', isset($payment) ? $payment->bank_account_id : null) == $account->id)>{{ $account->name }}</option>
+            <option value="{{ $account->id }}" @selected(old('bank_account_id', isset($payment) ? $payment->bank_account_id : null) == $account->id)>{{ $account->name }}{{ $account->iban ? ' - ' . $account->iban : '' }}</option>
         @endforeach
     </select>
     @error('bank_account_id')<div class="text-red-600 text-sm">{{ $message }}</div>@enderror

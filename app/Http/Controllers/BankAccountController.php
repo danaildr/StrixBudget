@@ -115,7 +115,8 @@ class BankAccountController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'currency' => ['required', 'string', 'size:3'],
             'is_active' => ['boolean'],
-            'is_default' => ['boolean']
+            'is_default' => ['boolean'],
+            'iban' => ['nullable', 'string', 'max:34', 'regex:/^[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}$/']
         ]);
 
         // Добавяне на is_active стойност, ако липсва (когато checkbox не е отметнат)

@@ -44,7 +44,7 @@
                                         data-currency="{{ $account->currency }}" 
                                         data-balance="{{ $account->balance }}"
                                         {{ old('bank_account_id', $defaults['bank_account_id'] ?? null) == $account->id ? 'selected' : '' }}>
-                                        {{ $account->name }} ({{ $account->currency }})
+                                        {{ $account->name }} ({{ $account->currency }}){{ $account->iban ? ' - ' . $account->iban : '' }}
                                     </option>
                                 @endforeach
                             </select>

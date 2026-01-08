@@ -31,6 +31,13 @@
                             <x-input-error class="mt-2" :messages="$errors->get('currency')" />
                         </div>
 
+                        <div>
+                            <x-input-label for="iban" :value="__('IBAN')" />
+                            <x-text-input id="iban" name="iban" type="text" class="mt-1 block w-full" :value="old('iban', $bankAccount->iban)" placeholder="BG80 BNBG 9661 1020 3456 78" />
+                            <x-input-error class="mt-2" :messages="$errors->get('iban')" />
+                            <p class="mt-1 text-sm text-gray-500">{{ __('Optional: International Bank Account Number') }}</p>
+                        </div>
+
                         <div class="flex items-center gap-4">
                             <label class="inline-flex items-center">
                                 <input type="checkbox" name="is_active" value="1" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" {{ old('is_active', $bankAccount->is_active) ? 'checked' : '' }}>
@@ -89,6 +96,29 @@
                     this.checked = true;
                 }
             });
+
+            // IBAN validation
+            const ibanInput = document.getElementById('iban');
+            if (ibanInput) {
+                ibanInput.addEventListener('input', function() {
+                    let value = this.value.toUpperCase().replace(/\s/g, '');
+                    this.value = value;
+                });
+
+                ibanInput.addEventListener('blur', function() {
+                    if (this.value && !validateIBAN(this.value)) {
+                        this.setCustomValidity('{{ __("Invalid IBAN format") }}');
+                    } else {
+                        this.setCustomValidity('');
+                    }
+                });
+            }
+
+            function validateIBAN(iban) {
+                // Basic IBAN validation regex
+                const ibanRegex = /^[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}$/;
+                return ibanRegex.test(iban);
+            }
         });
     </script>
     @endpush

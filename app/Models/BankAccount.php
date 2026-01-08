@@ -18,7 +18,8 @@ class BankAccount extends Model
         'is_active',
         'is_default',
         'user_id',
-        'balance'
+        'balance',
+        'iban'
     ];
 
     protected $casts = [

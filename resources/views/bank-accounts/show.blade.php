@@ -58,6 +58,12 @@
                                         <span class="text-gray-600">{{ __('Currency') }}:</span>
                                         <span class="text-gray-900">{{ $bankAccount->currency }}</span>
                                     </div>
+                                    @if($bankAccount->iban)
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">{{ __('IBAN') }}:</span>
+                                        <span class="text-gray-900 font-mono text-sm">{{ $bankAccount->iban }}</span>
+                                    </div>
+                                    @endif
                                     <div class="flex justify-between">
                                         <span class="text-gray-600">{{ __('Current Balance') }}:</span>
                                         <span class="font-medium {{ $bankAccount->balance >= 0 ? 'text-green-600' : 'text-red-600' }}">
